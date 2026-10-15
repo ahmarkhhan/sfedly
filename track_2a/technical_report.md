@@ -1,16 +1,15 @@
-# Skony — online Track 2A technical report draft
+# Skony — Track 2A OpenParlData: Technical Report
 
-Design authority: [project direction](../docs/16-project-direction.md).
-Completion evidence: [delivery backlog](../docs/18-delivery-backlog.md).
-Sources and access limits: [source register](../docs/17-source-register.md).
+Repository: <https://github.com/ahmarkhhan/sfedly> (built from the HackApertus project template).
+Build and completion evidence: [BUILD_STATUS](docs/BUILD_STATUS.md).
 Shared affair records and evaluation remain planned. Response caching, batch
 checkpoints, saved-result import and gold-export safeguards are implemented.
 Docker packaging and a synthetic practice replay exist; actual container
 execution is still unverified. [Pipeline evidence](docs/PIPELINE_VERIFICATION.md).
 
-Status: extraction and local review implementation, 15 October 2026. This Markdown file is not yet
-the required final PDF. One real-document pilot is complete; dataset-level
-extraction accuracy has not been measured.
+Status: extraction and local review implementation, 16 October 2026. One
+real-document pilot is complete; dataset-level extraction accuracy has not been
+measured.
 
 ## Problem and contribution
 
@@ -69,8 +68,7 @@ Both were rejected. The 70B pilot returned valid fields. Replaying that recorded
 response with verifier `evidence-v0.2` located the title, type, printed date and
 request; it abstained on the garbled submitter and absent answer/decision fields.
 The 70B call took 7.234 seconds and used 1,725 tokens. These are single-call
-observations, not a benchmark or a gold-set result. Full pilot details are in
-`../docs/12-cscs-pilot.md`.
+observations, not a benchmark or a gold-set result.
 
 ## Planned evaluation
 
