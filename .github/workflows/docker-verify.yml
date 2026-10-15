@@ -29,29 +29,6 @@ jobs:
           set -o pipefail
           python3 scripts/check_docker.py --out "$RUNNER_TEMP/docker-check" 2>&1 | tee "$RUNNER_TEMP/docker-check-step.log"
 
-      - name: Publish machine-readable report to the docker-check branch
-        if: always()
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin docker-check || true
-          git checkout -B docker-check origin/docker-check 2>/dev/null || git checkout --orphan docker-check
-          git rm -rf . >/dev/null 2>&1 || true
-          mkdir -p docker-check
-          if [ -f "$RUNNER_TEMP/canary.log" ]; then cp "$RUNNER_TEMP/canary.log" docker-check/canary.log; fi
-          cp "$RUNNER_TEMP/docker-check/report.json" docker-check/report.json || echo "report.json missing; verifier crashed before writing it" > docker-check/report-missing.txt
-          if [ -f "$RUNNER_TEMP/docker-check/docker.log" ]; then
-            tail -c 262144 "$RUNNER_TEMP/docker-check/docker.log" > docker-check/docker.log.tail.txt || true
-          fi
-          if [ -f "$RUNNER_TEMP/docker-check-step.log" ]; then
-            cp "$RUNNER_TEMP/docker-check-step.log" docker-check/step-output.log || true
-          fi
-          docker version > docker-check/docker-version.txt 2>&1 || true
-          docker compose version >> docker-check/docker-version.txt 2>&1 || true
-          git add docker-check
-          git commit -m "Docker verification report (run ${{ github.run_number }}, conclusion: ${{ job.status }})" || true
-          git push -f origin docker-check
-
       - name: Upload verification report
         if: always()
         uses: actions/upload-artifact@v4
@@ -60,4 +37,26 @@ jobs:
           path: |
             ${{ runner.temp }}/docker-check/report.json
             ${{ runner.temp }}/docker-check/docker.log
+            ${{ runner.temp }}/docker-check-step.log
+            ${{ runner.temp }}/canary.log
           retention-days: 30
+          if-no-files-found: warn
+
+      - name: Publish machine-readable report to the docker-check branch
+        if: always()
+        continue-on-error: true
+        run: |
+          set -x
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan docker-check 2>/dev/null || git checkout -B docker-check
+          git rm -rf . >/dev/null 2>&1 || true
+          mkdir -p docker-check
+          [ -f "$RUNNER_TEMP/canary.log" ] && cp "$RUNNER_TEMP/canary.log" docker-check/canary.log
+          [ -f "$RUNNER_TEMP/docker-check/report.json" ] && cp "$RUNNER_TEMP/docker-check/report.json" docker-check/report.json
+          [ -f "$RUNNER_TEMP/docker-check-step.log" ] && cp "$RUNNER_TEMP/docker-check-step.log" docker-check/step-output.log
+          [ -f "$RUNNER_TEMP/docker-check/docker.log" ] && tail -c 262144 "$RUNNER_TEMP/docker-check/docker.log" > docker-check/docker.log.tail.txt
+          ls -la docker-check
+          git add docker-check
+          git commit -m "Docker verification report (run ${{ github.run_number }}, conclusion: ${{ job.status }})"
+          git push -f origin docker-check
