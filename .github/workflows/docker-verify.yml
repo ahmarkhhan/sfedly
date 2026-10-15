@@ -15,6 +15,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install httpx for the verification script
+        run: python3 -m pip install --quiet httpx
+
       - name: Environment canary
         run: |
           {
@@ -30,10 +33,9 @@ jobs:
       - name: Verify container build, tests, preview and review persistence
         working-directory: track_2a
         run: |
-          python3 scripts/check_docker.py --out "$RUNNER_TEMP/docker-check" > "$RUNNER_TEMP/docker-check-step.log" 2>&1
-          rc=$?
-          echo "verifier exit code: $rc" | tee -a "$RUNNER_TEMP/docker-check-step.log"
-          exit $rc
+          python3 scripts/check_docker.py --out "$RUNNER_TEMP/docker-check" 2>&1 | tee "$RUNNER_TEMP/docker-check-step.log"
+          echo "verifier exit code: ${PIPESTATUS[0]}" | tee -a "$RUNNER_TEMP/docker-check-step.log"
+          exit "${PIPESTATUS[0]}"
 
       - name: Upload verification report
         if: always()
