@@ -11,6 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Environment canary
         run: |
           {
@@ -26,8 +30,10 @@ jobs:
       - name: Verify container build, tests, preview and review persistence
         working-directory: track_2a
         run: |
-          set -o pipefail
-          python3 scripts/check_docker.py --out "$RUNNER_TEMP/docker-check" 2>&1 | tee "$RUNNER_TEMP/docker-check-step.log"
+          python3 scripts/check_docker.py --out "$RUNNER_TEMP/docker-check" > "$RUNNER_TEMP/docker-check-step.log" 2>&1
+          rc=$?
+          echo "verifier exit code: $rc" | tee -a "$RUNNER_TEMP/docker-check-step.log"
+          exit $rc
 
       - name: Upload verification report
         if: always()
