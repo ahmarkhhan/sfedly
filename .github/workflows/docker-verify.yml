@@ -15,6 +15,23 @@ jobs:
         working-directory: track_2a
         run: python3 scripts/check_docker.py --out "$RUNNER_TEMP/docker-check"
 
+      - name: Publish machine-readable report to the docker-check branch
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin docker-check || true
+          git checkout -B docker-check origin/docker-check 2>/dev/null || git checkout --orphan docker-check
+          git rm -rf . >/dev/null 2>&1 || true
+          mkdir -p docker-check
+          cp "$RUNNER_TEMP/docker-check/report.json" docker-check/report.json
+          if [ -f "$RUNNER_TEMP/docker-check/docker.log" ]; then
+            tail -c 262144 "$RUNNER_TEMP/docker-check/docker.log" > docker-check/docker.log.tail.txt || true
+          fi
+          git add docker-check
+          git commit -m "Docker verification report (run ${{ github.run_number }}, conclusion: ${{ job.status }})" || true
+          git push -f origin docker-check
+
       - name: Upload verification report
         if: always()
         uses: actions/upload-artifact@v4
