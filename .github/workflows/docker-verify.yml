@@ -11,6 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Environment canary
+        run: |
+          {
+            echo "== os =="; uname -a
+            echo "== python =="; python3 --version; which python3
+            echo "== docker =="; docker version 2>&1 | head -20
+            echo "== compose =="; docker compose version 2>&1
+            echo "== checkout =="; ls -la
+            echo "== track_2a =="; ls -la track_2a | head -25
+          } > "$RUNNER_TEMP/canary.log" 2>&1
+          cat "$RUNNER_TEMP/canary.log"
+
       - name: Verify container build, tests, preview and review persistence
         working-directory: track_2a
         run: |
@@ -26,6 +38,7 @@ jobs:
           git checkout -B docker-check origin/docker-check 2>/dev/null || git checkout --orphan docker-check
           git rm -rf . >/dev/null 2>&1 || true
           mkdir -p docker-check
+          if [ -f "$RUNNER_TEMP/canary.log" ]; then cp "$RUNNER_TEMP/canary.log" docker-check/canary.log; fi
           cp "$RUNNER_TEMP/docker-check/report.json" docker-check/report.json || echo "report.json missing; verifier crashed before writing it" > docker-check/report-missing.txt
           if [ -f "$RUNNER_TEMP/docker-check/docker.log" ]; then
             tail -c 262144 "$RUNNER_TEMP/docker-check/docker.log" > docker-check/docker.log.tail.txt || true
