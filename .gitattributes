@@ -8,9 +8,13 @@
 *.woff binary
 *.woff2 binary
 
-# Data interchange and fixtures: keep bytes exactly as committed.
+# Data interchange and fixtures: keep bytes exactly as committed
+# (manifests pin sha256 of these files; CRLF conversion breaks the checksums).
 *.ndjson -text
 *.sha256 -text
+*.json -text
+*.txt -text
+*.md text eol=lf
 
 # Shell/Make portability for judges on Linux/macOS.
 Makefile text eol=lf
