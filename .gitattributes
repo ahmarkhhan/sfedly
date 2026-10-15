@@ -1,0 +1,20 @@
+# Binary assets must never be line-ending converted (PDFs break: bad startxref).
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+
+# Data interchange and fixtures: keep bytes exactly as committed.
+*.ndjson -text
+*.sha256 -text
+
+# Shell/Make portability for judges on Linux/macOS.
+Makefile text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
