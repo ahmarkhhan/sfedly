@@ -1,0 +1,25 @@
+# Allow only runtime source, public fixtures and engineering tests.
+**
+!Dockerfile
+!requirements.txt
+!LICENSE
+!src/
+!src/**
+!web/
+!web/**
+!tests/
+!tests/**
+!scripts/
+!scripts/healthcheck.py
+!scripts/batch_extract.py
+!scripts/export_gold.py
+!scripts/load_corpus_into_workbench.py
+!scripts/fetch_gold_pdfs.py
+!scripts/select_gold_corpus.py
+!data/
+!data/sample/
+!data/sample/**
+**/__pycache__/
+**/*.pyc
+**/*.env
+**/.env*

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Skony · Scoped review and comparison</title>
+  <link rel="stylesheet" href="/scoped.css"><script src="/scoped.js" defer></script>
+</head>
+<body>
+  <header><a class="brand" href="/">+ skony.</a><nav aria-label="Workspace"><a href="/">Document review</a><a href="#review">Scoped review</a><a href="#compare">Comparison</a></nav><label>Reviewing as <input id="reviewer" maxlength="80" placeholder="Your name" required></label></header>
+  <main>
+    <div class="intro"><p class="eyebrow">SOURCE → REVIEW → FROZEN EVIDENCE</p><h1>Keep meaning attached to its source.</h1><p>Review a defined affair and document scope. Save accepted decisions as an immutable snapshot, then compare its original wording.</p></div>
+    <p id="message" role="status" aria-live="polite">Loading local records…</p>
+    <section id="review" aria-labelledby="review-heading">
+      <div class="section-heading"><h2 id="review-heading">Scoped review</h2><button id="refresh" type="button">Refresh records</button></div>
+      <label for="scope">Source scope</label><select id="scope"></select><p id="scope-summary" class="muted"></p>
+      <details id="association"><summary>Review affair membership and document role</summary>
+        <p>Use a source-supported identity. Identical affair numbers in different bodies remain separate. This form preserves the selected section boundaries.</p>
+        <form id="association-form">
+          <div class="grid"><label>Existing affair<select id="existing-affair"><option value="">Register an affair</option></select></label><label>Document role<select id="role"><option value="unknown">Unknown</option><option value="submission">Submission</option><option value="executive_response">Executive response</option><option value="decision_record">Decision record</option><option value="minutes">Minutes</option><option value="annex">Annex</option><option value="combined">Combined</option></select></label></div>
+          <div id="new-affair" class="grid"><label>Internal affair ID<input id="affair-id" placeholder="A stable local identifier"></label><label>Provider namespace<input id="provider" placeholder="For example, openparldata"></label><label>Source body ID<input id="body-id"></label><label>Export body key<input id="body-key"></label><label>Official affair number, if established<input id="official-id"></label><label>Jurisdiction<select id="level"><option value="unknown">Unknown</option><option value="municipal">Municipal</option><option value="cantonal">Cantonal</option><option value="federal">Federal</option></select></label></div>
+          <label>Evidence for this association and role<textarea id="association-note" required></textarea></label>
+          <button type="submit" class="primary">Save reviewed association</button>
+        </form>
+      </details>
+      <div class="review-grid">
+        <div>
+          <h3>Assertions and review</h3><p class="muted">A located passage is a proposal until its meaning is reviewed. Changes to its scope, role, evidence or conflicts can require a new decision.</p>
+          <div id="claims"></div>
+          <details><summary>Add a correction or source disposition</summary>
+            <form id="correction-form">
+              <div class="grid"><label>Field<select id="field"></select></label><label>Source assessment<select id="assessment"><option value="present">Present</option><option value="absent_in_reviewed_scope">Absent in this reviewed scope</option><option value="unreadable">Unreadable</option><option value="ambiguous">Ambiguous</option><option value="outside_available_scope">Outside available scope</option><option value="not_assessed">Not assessed</option></select></label></div>
+              <label>Evidence basis<select id="basis"><option value="text">Exact source text</option><option value="image">Human image transcription</option></select></label>
+              <p class="muted">Add passages in source order. Text quotations are resolved against the original text layer. Image transcriptions open the page with your note.</p>
+              <div id="segments"></div><button id="add-segment" type="button">Add continuation passage</button>
+              <label>Visual evidence note, when transcribing from an image<textarea id="visual-note"></textarea></label>
+              <button type="submit" class="primary">Save proposal for review</button>
+            </form>
+          </details>
+        </div>
+        <aside class="source">
+          <h3>Source evidence</h3><p id="source-caption" class="muted">Choose a citation to inspect its exact evidence.</p>
+          <div class="grid"><label>Text page and layer<select id="source-page"></select></label><a id="original" target="_blank" rel="noopener">Open original PDF</a></div>
+          <pre id="source-text" tabindex="0"></pre>
+          <div id="source-image" hidden></div><blockquote id="transcription" hidden></blockquote>
+        </aside>
+      </div>
+    </section>
+    <section aria-labelledby="freeze-heading">
+      <h2 id="freeze-heading">Save a reviewed snapshot</h2><p>Only eligible, explicitly accepted decisions can enter a new snapshot. Historical decisions remain available after later changes.</p>
+      <div id="decisions"></div><button id="freeze" class="primary" type="button">Freeze selected decisions</button>
+    </section>
+    <section id="compare" aria-labelledby="compare-heading">
+      <h2 id="compare-heading">Compare frozen evidence</h2>
+      <label for="snapshot">Saved snapshot</label><select id="snapshot"></select>
+      <label for="question">Question for this comparison</label><input id="question" value="What request, executive response and parliamentary decision are documented in these reviewed scopes?">
+      <div id="columns" class="checks"></div>
+      <div class="actions"><button id="compare-button" class="primary" type="button">Build comparison</button><button id="download-snapshot" type="button">Download snapshot</button><button id="download-comparison" type="button" disabled>Download comparison</button></div>
+      <p id="historical" class="notice" hidden>This is historical evidence. Later changes affect current eligibility; these frozen results reproduce the original reviewed scope.</p>
+      <div id="comparison" class="table-scroll"></div>
+    </section>
+  </main>
+  <dialog id="citation-dialog"><div class="section-heading"><h2>Cited source</h2><button id="close-citation" type="button">Close</button></div><p id="citation-label"></p><div id="citation-content"></div></dialog>
+</body>
+</html>

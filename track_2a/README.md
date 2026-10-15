@@ -1,62 +1,99 @@
-# Academia Challenges
+# Skony - parliamentary data with proof
 
-Submissions must use the Apertus model family.
-For Track 2 this means that submitted solutions must be built with Apertus. Other open-weights models can be used to support development, e.g. as automatic judges during evaluation. Their role must be clearly described in the submission report.
+An **Apertus 1.5** project for **Hack Apertus online / Track 2A / OpenParlData**.
+Deadline: **16 October 2026, 12:00 CEST / 15:00 Pakistan time**.
 
-💬 In case you have questions, join the conversation on Discord or send an email to “hello@hackapertus.ch”
+Skony investigates a shared representation for parliamentary requests and
+government answers. Its prototype extracts eight raw fields, locates source
+evidence and supports persistent human review. The target is a reusable converter
+with measured findings across bodies and languages.
 
-## How it works
-Pick from 5 academia challenges provided by Swiss academic institutions:
+**Status, 15 October:** extraction/review, batch caching/checkpoints, saved-result
+import, gold-export safeguards, replay/live modes and Docker packaging are
+implemented. **82 tests** and a clean-source startup check pass. Two real DE/FR
+PDFs replayed with identical results and **zero model calls**. Actual container
+execution, reviewed-corpus evaluation and affair assembly remain pending.
 
-- **FHGR:** AI-Powered Job Interview Coach
-- **OpenParlData:** Extracting Parliamentary Affairs from PDFs into One Common Structure
-- **OST:** Multilingual Natural Language Inference over Swiss Official Voting Booklets
-- **UZH:** Detecting Cross-Lingual Semantic Differences in Swiss Government Websites
-- **ZHAW:** See It, Say It, Pick It: Vision-Language Grounding for a Real Robot Arm
+## Direction and evidence
 
-The challenges incl. submission and judging criteria are described in our **Getting Started guide**:
-https://hackapertus.notion.site/getting-started-guide-onlinehack
+- [Implementation status](docs/BUILD_STATUS.md)
+- [Development guide](docs/DEVELOPMENT.md)
+- [Running and updating, including Docker](docs/RUNNING.md)
+- [Batch extraction and review workflow](docs/BATCH_EVALUATION.md)
+- [Verification evidence and limits](docs/PIPELINE_VERIFICATION.md)
+- [Active technical report draft](technical_report.md)
 
-## Run it
+## Run the packaged version
 
-Keep `track_2a/` as it is: don't rename it or move its files, just delete the
-other track directories.
+From the repository root or this directory, use `make run`. Without Make, run
+`docker compose up --build --wait --wait-timeout 90` from this directory.
+Open [Skony](http://localhost:8765). Docker Engine/Desktop with Linux containers
+and Compose v2 is required. The container build has not been verified here;
+see the [running guide](docs/RUNNING.md) for prerequisites and exact status.
 
-From the root of the project:
+The default replay demonstration uses a bundled **synthetic practice document**
+with authored suggestions, clearly labelled as neither Apertus output nor gold.
+It makes no model call. Named volume storage is intended to preserve uploaded
+PDFs, reviews and audit history when application files are rebuilt.
 
-```bash
-make run
-```
+## Run with local Python
 
-Fill in the [Makefile](Makefile) so that it works on a clean checkout. It is
-expected to run the project in a Docker container, since that is how the judges
-will run it, without relying on anything already installed on your machine.
+From track_2a/, with Python 3.11+ and the pinned dependencies:
 
-Requirements: `runtime, hardware, API keys, model weights`
+~~~powershell
+python -m pip install -r requirements.txt
+$env:PYTHONPATH = 'src'
+python -m skony serve --mode replay --port 8765
+~~~
 
-## Data
-The `data/` directory must not exceed 100 MB.
+Open http://127.0.0.1:8765. Poppler's pdftoppm supplies original-page previews.
+Replay documents and decisions persist in ignored output/workbench-replay/.
+Use `--mode live` to open the existing output/workbench/ and local API setup.
+See the development guide for configuration and isolated QA.
 
+Live mode imports the privately retained pilot if present. The public replay
+sample does not depend on it. Explicit live extraction uses LLM_NAME,
+LLM_BASE_URL and LLM_API_KEY. Keep keys outside the public package. Replay blocks
+live extraction even when credentials exist; no silent model fallback is used.
 
-## 📦 Submission Requirements & Deliverables
-❗️ Submissions are not handled on Devpost. Submit through our website only:
-http://hackapertus.ch/online-hack/submissions
+~~~powershell
+python -m unittest discover -s tests
+~~~
 
-Requirements differ by challenge. See the description of the challenge you are entering for the exact deliverables.
+**82 engineering tests passed on 15 October 2026.** They do not establish real
+model accuracy or multilingual coverage.
 
+## Judge execution: required, still pending
 
-## ⚖️ Judging Criteria
-Judging criteria also differ by challenge. See the respective challenge description.
+The [official template](https://github.com/HackApertus/project-template/blob/main/track_2a/README.md)
+requires Docker execution through make run from the selected project root.
+Keep track_2a/. Dockerfile/Compose/Makefiles and the public practice seed now
+exist. Clean-source startup, previews and restart persistence pass with local
+Python dependencies; Docker build/run/rebuild verification remains pending.
+Run `python scripts/check_docker.py` on an engine host for the full check.
+Real-response batching/caching works; human review and scoring are next.
 
+## Source data and limitations
 
-## Support
+The private corpus has 44 downloaded PDFs and one preserved failed download.
+Two DE/FR PDFs now have cached real Apertus responses, in addition to the older
+Nidau pilot. Redistribution rights and a frozen reviewed evaluation set are
+pending; the bundled synthetic fixture is an engineering demonstration only.
+The selected data/ directory must remain <=100 MB.
 
-**Licensing requirements**
-Please check our Terms & Conditions (6. What you build is open source):
-https://hackapertus.ch/terms-and-conditions
+Automatic evidence currently represents one page/quote per field. Source
+matching does not establish correct roles or complete answers. Textless scans,
+long inputs, tables and annexes need explicit unsupported/review handling.
+No new OCR pipeline is implemented.
 
-## FAQ
-💡 https://hackapertus.ch/faq
+## Submission and licensing
 
-## Contact
-💬 In case you have questions, join the conversation on Discord or send an email to “hello@hackapertus.ch”
+Submit through the [organiser website](https://hackapertus.ch/online-hack/submissions),
+selecting Track 2A - OpenParlData: public GitHub repository with converter,
+Apertus prompts, validator and README samples; technical report PDF **<=6 pages**.
+The Markdown report is still a draft.
+
+The [event terms](https://hackapertus.ch/terms-and-conditions) specify Apache-2.0
+for code/weights, CC-BY-4.0 for non-code output and CDLA-Permissive-2.0 for
+submitted datasets, subject to stated exceptions and third-party rights.
+Document item-level publication rights and supporting development models.

@@ -1,0 +1,89 @@
+{
+  "$defs": {
+    "CandidateField": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Page"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Quote"
+        }
+      },
+      "required": [
+        "value",
+        "page",
+        "quote"
+      ],
+      "title": "CandidateField",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "$ref": "#/$defs/CandidateField"
+    },
+    "affair_type_raw": {
+      "$ref": "#/$defs/CandidateField"
+    },
+    "submitter_raw": {
+      "$ref": "#/$defs/CandidateField"
+    },
+    "submitted_date_raw": {
+      "$ref": "#/$defs/CandidateField"
+    },
+    "question_text": {
+      "$ref": "#/$defs/CandidateField"
+    },
+    "answer_text": {
+      "$ref": "#/$defs/CandidateField"
+    },
+    "decision_raw": {
+      "$ref": "#/$defs/CandidateField"
+    },
+    "decision_date_raw": {
+      "$ref": "#/$defs/CandidateField"
+    }
+  },
+  "required": [
+    "title",
+    "affair_type_raw",
+    "submitter_raw",
+    "submitted_date_raw",
+    "question_text",
+    "answer_text",
+    "decision_raw",
+    "decision_date_raw"
+  ],
+  "title": "CandidateExtraction",
+  "type": "object"
+}

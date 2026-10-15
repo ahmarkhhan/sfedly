@@ -25,3 +25,8 @@ build/
 .DS_Store
 .idea/
 .vscode/
+
+# Skony runtime state and rights-restricted source data (never publish)
+track_2a/output/
+track_2a/tmp/
+track_2a/data/private/

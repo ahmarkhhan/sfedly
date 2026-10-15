@@ -1,6 +1,22 @@
-.PHONY: run
+.DEFAULT_GOAL := run
+DOCKER ?= docker
+COMPOSE = $(DOCKER) compose
 
-# Replace with the command that starts the project in a Docker container,
-# e.g. `docker compose up`. It must work from a clean checkout.
+.PHONY: run test down logs verify-docker
+
 run:
-	@echo "make run is not implemented yet — edit this Makefile"; exit 1
+	$(COMPOSE) up --build --wait --wait-timeout 90
+	@echo Open http://localhost:$(if $(SKONY_PORT),$(SKONY_PORT),8765)
+
+test:
+	$(COMPOSE) build workbench
+	$(COMPOSE) run --rm --no-deps -e LLM_API_KEY= workbench python -m unittest discover -s tests
+
+down:
+	$(COMPOSE) down
+
+logs:
+	$(COMPOSE) logs --follow workbench
+
+verify-docker:
+	python scripts/check_docker.py

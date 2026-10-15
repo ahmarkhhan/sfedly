@@ -1,0 +1,10 @@
+{
+  "fixture_id": "skony.synthetic.request.v1",
+  "kind": "synthetic_engineering_fixture",
+  "source": "Authored for Skony; no real parliamentary record or person",
+  "language": "de",
+  "licence": "CDLA-Permissive-2.0",
+  "candidate_origin": "Authored engineering suggestions; not model output or human gold",
+  "pdf_sha256": "5d05b1d27cb6b7e978be2a8b63f3bdd8a3dc52da3065183d225a02cb440ad04b",
+  "candidate_sha256": "3afc28ee9d8ef5c460c6eef1d54da0fe4f170737aea45df74d560003dd5e24a9"
+}

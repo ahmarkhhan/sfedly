@@ -1,60 +1,56 @@
-# Hack Apertus — project template
+# Skony — parliamentary affairs from PDFs, with proof
 
-Template repository for [Hack Apertus](https://hackapertus.ch/) submissions.
-Every project keeps almost the same layout, so organizers and judges find the
-same things in the same place.
+**Hack Apertus online · Track 2A · OpenParlData.** Submission: 16 October 2026.
 
-## Select your track
-
-This repository holds one example project per track:
-
-- `track_1a/`
-- `track_1b/`
-- `track_2a/`
-- `track_2b/`
-
-Keep the directory for the track you are competing in **exactly as it is** —
-don't rename it or move its files — and delete the other track directories.
-That directory is your project root. Keep the files and directories as shown
-below.
-
-## The structure
-
-| Path | What it is |
-| --- | --- |
-| `README.md` | The challenge description and submission requirements for your track |
-| `technical_report.md` | The deeper write-up: architecture, evaluation, limitations |
-| `Makefile` | `make run` must spin up your project |
-| `src/` | Your code |
-| `data/` | Datasets — `track_1a`, `track_2a` and `track_2b` only; max. 100 MB |
-| `findings/` | Issue files — `track_1a` only |
-| `docs/` | Diagrams, notes, longer write-ups |
+Skony investigates whether parliamentary affairs (motions, postulates,
+interpellations, written questions) from different Swiss parliaments can share
+one structured representation — and builds an **Apertus v1.5** pipeline that
+extracts that representation from real parliamentary PDFs with **page- and
+span-level provenance**: every extracted value keeps its page number, original
+quote and character offsets, so a reviewer can verify it against the source in
+seconds. Unsupported values are withheld, not guessed.
 
 ## Run it
 
-Judges run `make run` from the root of the project, on a clean checkout:
-
 ```bash
-make run
+make run          # Docker; judges' entry point — from this root
 ```
 
-`make run` is expected to run the project using Docker, since that
-is how the judges will run it.
-- If you used other local open-weight models, include instructions for running the project in your technical report.
-- Use the following environment variables:
-```
-LLM_NAME — name and version of the model
-LLM_BASE_URL — endpoint base URL
-LLM_API_KEY — your API key
-```
+Then open http://localhost:8765. The default replay demo uses a bundled
+synthetic practice document (clearly labelled, no API key, no model call).
+Without Make: `docker compose up --build --wait --wait-timeout 90` from
+`track_2a/`. Live Apertus extraction is configured with `LLM_NAME`,
+`LLM_BASE_URL`, `LLM_API_KEY` (see `track_2a/.env.example`).
 
-## Getting started
+## Where things are
 
-1. Click **Use this template** to create your own repository.
-2. Delete the other track directories. Don't rename or restructure yours.
-3. Read its `README.md` and fill in `technical_report.md`.
-4. Make `make run` work from the root of the project, on a clean checkout.
+| Path | What it is |
+| --- | --- |
+| `track_2a/` | **Project root** (per the Hack Apertus template): converter, prompts, validator, review workbench |
+| `track_2a/README.md` | Full project documentation, status and limitations |
+| `track_2a/technical_report.md` | Technical report (source of the submitted ≤6-page PDF) |
+| `track_2a/src/skony/` | PDF intake → Apertus client → strict validation → evidence verification → review store |
+| `track_2a/src/prompts/extract.txt` | The Apertus extraction prompt |
+| `track_2a/docs/` | Architecture, verification evidence, batch/evaluation workflow, annotation guide |
+| `track_2a/data/sample/` | Public synthetic practice fixture (authored; not model output, not gold data) |
+| `track_2a/tests/` | Engineering test suite (`python -m unittest discover -s tests`) |
+
+## Status in one paragraph
+
+The PDF→schema slice, provenance verification, human-review workbench, batch
+caching with replay, and Docker packaging are implemented and covered by 82
+passing engineering tests; a real DE/FR document pair was extracted with
+Apertus 1.5 70B and replayed with identical results and zero model calls.
+Gold-set annotation, measured evaluation, controlled-vocabulary mapping and a
+cross-parliamentary comparison are this submission's evidence work — see
+`track_2a/technical_report.md` for exactly what is measured, what is partial,
+and what is not yet done. The container build is packaged but was not
+executable in the development environment; `track_2a/scripts/check_docker.py`
+verifies it on any Docker host.
 
 ## License
 
-All Hack Apertus projects are open-sourced. Please check our Terms & Conditions for specific licensing details (6. What you build is open source): https://hackapertus.ch/terms-and-conditions
+Code: Apache-2.0 (`LICENSE`). Documentation and reports: CC-BY-4.0.
+The bundled practice fixture is authored by the project and reusable under
+CC-BY-4.0. No third-party parliamentary documents are redistributed in this
+repository; the pipeline fetches public sources by manifest.

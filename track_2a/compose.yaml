@@ -1,0 +1,36 @@
+services:
+  workbench:
+    build:
+      context: .
+    ports:
+      - "127.0.0.1:${SKONY_PORT:-8765}:8765"
+    environment:
+      SKONY_MODE: ${SKONY_MODE:-replay}
+      SKONY_DATA_DIR: /state
+      LLM_NAME: ${LLM_NAME:-swiss-ai/Apertus-v1.5-70B}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.inference.cscs.ch/v1}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+    command:
+      - python
+      - -m
+      - skony
+      - serve
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8765"
+      - --public-port
+      - "${SKONY_PORT:-8765}"
+    volumes:
+      - review-state:/state
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  review-state:
