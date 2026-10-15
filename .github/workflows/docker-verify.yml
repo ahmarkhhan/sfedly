@@ -13,7 +13,9 @@ jobs:
 
       - name: Verify container build, tests, preview and review persistence
         working-directory: track_2a
-        run: python3 scripts/check_docker.py --out "$RUNNER_TEMP/docker-check"
+        run: |
+          set -o pipefail
+          python3 scripts/check_docker.py --out "$RUNNER_TEMP/docker-check" 2>&1 | tee "$RUNNER_TEMP/docker-check-step.log"
 
       - name: Publish machine-readable report to the docker-check branch
         if: always()
@@ -24,10 +26,15 @@ jobs:
           git checkout -B docker-check origin/docker-check 2>/dev/null || git checkout --orphan docker-check
           git rm -rf . >/dev/null 2>&1 || true
           mkdir -p docker-check
-          cp "$RUNNER_TEMP/docker-check/report.json" docker-check/report.json
+          cp "$RUNNER_TEMP/docker-check/report.json" docker-check/report.json || echo "report.json missing; verifier crashed before writing it" > docker-check/report-missing.txt
           if [ -f "$RUNNER_TEMP/docker-check/docker.log" ]; then
             tail -c 262144 "$RUNNER_TEMP/docker-check/docker.log" > docker-check/docker.log.tail.txt || true
           fi
+          if [ -f "$RUNNER_TEMP/docker-check-step.log" ]; then
+            cp "$RUNNER_TEMP/docker-check-step.log" docker-check/step-output.log || true
+          fi
+          docker version > docker-check/docker-version.txt 2>&1 || true
+          docker compose version >> docker-check/docker-version.txt 2>&1 || true
           git add docker-check
           git commit -m "Docker verification report (run ${{ github.run_number }}, conclusion: ${{ job.status }})" || true
           git push -f origin docker-check
