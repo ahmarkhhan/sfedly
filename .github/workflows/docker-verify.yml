@@ -50,19 +50,21 @@ jobs:
 
       - name: Publish machine-readable report to the docker-check branch
         if: always()
-        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -x
+          mkdir -p /tmp/report
+          [ -f "$RUNNER_TEMP/canary.log" ] && cp "$RUNNER_TEMP/canary.log" /tmp/report/canary.log
+          [ -f "$RUNNER_TEMP/docker-check/report.json" ] && cp "$RUNNER_TEMP/docker-check/report.json" /tmp/report/report.json
+          [ -f "$RUNNER_TEMP/docker-check-step.log" ] && cp "$RUNNER_TEMP/docker-check-step.log" /tmp/report/step-output.log
+          [ -f "$RUNNER_TEMP/docker-check/docker.log" ] && tail -c 262144 "$RUNNER_TEMP/docker-check/docker.log" > /tmp/report/docker.log.tail.txt
+          ls -la /tmp/report
+          cd /tmp/report
+          git init -q -b docker-check .
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan docker-check 2>/dev/null || git checkout -B docker-check
-          git rm -rf . >/dev/null 2>&1 || true
-          mkdir -p docker-check
-          [ -f "$RUNNER_TEMP/canary.log" ] && cp "$RUNNER_TEMP/canary.log" docker-check/canary.log
-          [ -f "$RUNNER_TEMP/docker-check/report.json" ] && cp "$RUNNER_TEMP/docker-check/report.json" docker-check/report.json
-          [ -f "$RUNNER_TEMP/docker-check-step.log" ] && cp "$RUNNER_TEMP/docker-check-step.log" docker-check/step-output.log
-          [ -f "$RUNNER_TEMP/docker-check/docker.log" ] && tail -c 262144 "$RUNNER_TEMP/docker-check/docker.log" > docker-check/docker.log.tail.txt
-          ls -la docker-check
-          git add docker-check
-          git commit -m "Docker verification report (run ${{ github.run_number }}, conclusion: ${{ job.status }})"
+          git add -A
+          git commit -q -m "Docker verification report (run ${{ github.run_number }})"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
           git push -f origin docker-check
