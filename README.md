@@ -17,6 +17,22 @@ enter a reviewed export.
 GPU. Practice documents are synthetic and labelled in the interface.
 See the [running guide](track_2a/docs/RUNNING.md) for Docker requirements and commands.
 
+**Key components (submission checklist):**
+
+- **PDF-to-schema converter** — [pdf.py](track_2a/src/skony/pdf.py) (PDF to page
+  text) feeding [pipeline_v2.py](track_2a/src/skony/pipeline_v2.py) into the typed
+  record model in [schema.py](track_2a/src/skony/schema.py).
+- **Apertus prompts** — [src/prompts/extract.txt](track_2a/src/prompts/extract.txt),
+  the Apertus 1.5 extraction prompt (German, French, Italian, Romansh, English),
+  with verbatim page/quote evidence rules.
+- **Validator** — schema and contract checks in [schema.py](track_2a/src/skony/schema.py)
+  and [contracts.py](track_2a/src/skony/contracts.py), extraction-completeness checks
+  in [completeness.py](track_2a/src/skony/completeness.py), and replay-fixture
+  verification in [verify.py](track_2a/src/skony/verify.py).
+- **Samples** — [track_2a/data/sample](track_2a/data/sample): a synthetic practice
+  PDF with expected JSON output and a checksum manifest, runnable offline via the
+  replay demo (`make run`, no API key or GPU needed).
+
 **Evaluation boundary:** engineering checks and a recorded real-document pilot
 are available. Corpus-level accuracy and human gold evaluation remain unmeasured.
 A located passage is evidence to inspect, not automatic proof that a field is correct.
