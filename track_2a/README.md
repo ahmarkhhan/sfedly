@@ -8,9 +8,9 @@ government answers. Its prototype extracts eight raw fields, locates source
 evidence and supports persistent human review. The target is a reusable converter
 with measured findings across bodies and languages.
 
-**Status, 15 October:** extraction/review, batch caching/checkpoints, saved-result
+**Status, 16 October:** extraction/review, batch caching/checkpoints, saved-result
 import, gold-export safeguards, replay/live modes and Docker packaging are
-implemented. **82 tests** and a clean-source startup check pass. Two real DE/FR
+implemented. **131 tests** and a clean-source startup check pass. Two real DE/FR
 PDFs replayed with identical results and **zero model calls**. Actual container
 execution, reviewed-corpus evaluation and affair assembly remain pending.
 
@@ -21,6 +21,7 @@ execution, reviewed-corpus evaluation and affair assembly remain pending.
 - [Running and updating, including Docker](docs/RUNNING.md)
 - [Batch extraction and review workflow](docs/BATCH_EVALUATION.md)
 - [Verification evidence and limits](docs/PIPELINE_VERIFICATION.md)
+- [Measured results and honest limits](docs/RESULTS.md)
 - [Active technical report draft](technical_report.md)
 
 ## Run the packaged version
@@ -60,7 +61,7 @@ live extraction even when credentials exist; no silent model fallback is used.
 python -m unittest discover -s tests
 ~~~
 
-**82 engineering tests passed on 15 October 2026.** They do not establish real
+**131 engineering tests passed on 16 October 2026.** They do not establish real
 model accuracy or multilingual coverage.
 
 ## Judge execution: required, still pending
@@ -97,3 +98,13 @@ The [event terms](https://hackapertus.ch/terms-and-conditions) specify Apache-2.
 for code/weights, CC-BY-4.0 for non-code output and CDLA-Permissive-2.0 for
 submitted datasets, subject to stated exceptions and third-party rights.
 Document item-level publication rights and supporting development models.
+
+| Component | Licence | Note |
+|---|---|---|
+| Application code (this repository) | Apache-2.0 | per event terms; `LICENSE` at root and in `track_2a/` |
+| Documentation and technical report | CC-BY-4.0 | per event terms |
+| Bundled synthetic fixture (`data/sample/`) | CDLA-Permissive-2.0 | authored for Skony; fictional people and parliament |
+| Runtime dependencies: pydantic 2.13.4, httpx 0.28.1, pypdf 6.11.0 | MIT / BSD-3-Clause | pinned in `requirements.txt`; check each package's `LICENSE` before redistribution |
+| Apertus v1.5, used at development time via the CSCS endpoint | Apache-2.0 (model) | not redistributed; the extraction prompt is in `src/prompts/extract.txt` |
+| OpenParlData source PDFs (private corpus) | source-specific terms | item-level rights unverified; **not redistributed** in this repository |
+| Container base (`python:3.11-slim`, Poppler) | Debian package terms | used only to build the runner image |

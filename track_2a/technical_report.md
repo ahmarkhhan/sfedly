@@ -9,7 +9,7 @@ execution is still unverified. [Pipeline evidence](docs/PIPELINE_VERIFICATION.md
 
 Status: extraction and local review implementation, 16 October 2026. One
 real-document pilot is complete; dataset-level extraction accuracy has not been
-measured.
+measured. Measured run evidence: [RESULTS](docs/RESULTS.md).
 
 ## Problem and contribution
 
@@ -32,7 +32,7 @@ faithfulness of question/answer boundaries. All such results require review.
 
 ## Validation so far
 
-82 engineering tests passed on local Python 3.11. The client was exercised with
+131 engineering tests passed on local Python 3.11 ([RESULTS](docs/RESULTS.md)). The client was exercised with
 mocked HTTP transports and the real CSCS service. Tests cover fabricated
 quotes/values, wrong page attribution, repeated quotes, missing evidence,
 textless/oversize input, malformed schemas, truncated/mismatched endpoint
@@ -101,7 +101,15 @@ must be confirmed against the provider's documented served-model mapping.
 
 The application uses a configurable Apertus endpoint. A Swiss endpoint and
 self-hosted endpoint are deployment targets; air-gapped operation has not been
-tested. Code follows Apache-2.0. Documentation is CC-BY-4.0. A source manifest
-must state individual third-party data licences before source material is
-redistributed or a dataset licence is applied to our own annotations.
+tested.
+
+| Component | Licence | Note |
+|---|---|---|
+| Application code (this repository) | Apache-2.0 | per event terms |
+| Documentation and this report | CC-BY-4.0 | per event terms |
+| Bundled synthetic fixture (`data/sample/`) | CDLA-Permissive-2.0 | authored; fictional people and parliament |
+| Runtime dependencies: pydantic, httpx, pypdf (pinned in `requirements.txt`) | MIT / BSD-3-Clause | check each package `LICENSE` before redistribution |
+| Apertus v1.5 via the CSCS endpoint (development time) | Apache-2.0 (model) | not redistributed |
+| OpenParlData source PDFs (private corpus) | source-specific terms | not redistributed; a source manifest must state item-level licences before any redistribution or before a dataset licence is applied to our own annotations |
+| Container base (`python:3.11-slim`, Poppler) | Debian package terms | runner image only |
 
