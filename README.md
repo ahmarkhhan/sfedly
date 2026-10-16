@@ -1,5 +1,28 @@
 # Skony — parliamentary data with proof
 
+## A quick tour for judges
+
+Skony turns parliamentary PDFs into searchable, source-linked records. Apertus
+suggests structured fields; a person checks the evidence before those values
+enter a reviewed export.
+
+| Screen | What to try | What it demonstrates |
+| --- | --- | --- |
+| **Review documents** · `/` | Open a document, select a field, and inspect its supporting passage. | Human review beside the original PDF, with saved decisions and an audit trail. |
+| **Explore affairs** · `/explore` | Search the collection, open a dossier, and follow a citation. | Research across source text, requests, answers, events and signatories. |
+| **Compare evidence** · `/scoped` | Review a source scope, save a snapshot, and compare wording. | Explicit review boundaries and a fixed record of accepted evidence. |
+
+**Try it locally:** run `make run` from this directory, then open
+[the workbench](http://localhost:8765). The replay demo requires no API key or
+GPU. Practice documents are synthetic and labelled in the interface.
+See the [running guide](track_2a/docs/RUNNING.md) for Docker requirements and commands.
+
+**Evaluation boundary:** engineering checks and a recorded real-document pilot
+are available. Corpus-level accuracy and human gold evaluation remain unmeasured.
+A located passage is evidence to inspect, not automatic proof that a field is correct.
+
+---
+
 **Current direction:** an Apertus 1.5 converter for comparable parliamentary
 request/answer records, preserving source evidence and measuring where the
 representation works or fails across bodies and languages.
