@@ -38,9 +38,9 @@ recorded output. New v0.2 fixtures and browser checks are synthetic.
 - [Measured checks, private pilot observations and reproduction limits](docs/RESULTS.md)
 - [Public data and secret handling](docs/PUBLICATION.md)
 
-- [Project direction and requirements](../../docs/16-project-direction.md)
-- [Source register](../../docs/17-source-register.md)
-- [Delivery backlog and release gates](../../docs/18-delivery-backlog.md)
+- [Project direction and requirements](../docs/16-project-direction.md)
+- [Source register](../docs/17-source-register.md)
+- [Delivery backlog and release gates](../docs/18-delivery-backlog.md)
 - [Implementation status](docs/BUILD_STATUS.md)
 - [A1–A7 implementation contracts and commands](docs/AUDIT_IMPLEMENTATION.md)
 - [Development guide](docs/DEVELOPMENT.md)
@@ -50,7 +50,7 @@ recorded output. New v0.2 fixtures and browser checks are synthetic.
 - [Controlled vocabularies and standards mapping](docs/VOCABULARY.md)
 - [Structural content inventory: annexes, images, tables](docs/STRUCTURE.md)
 - [Verification evidence and limits](docs/PIPELINE_VERIFICATION.md)
-- [Active technical report draft](technical_report.md)
+- [Technical report PDF](technical_report.pdf) and [source](technical_report.md)
 
 ## Run the packaged version
 
@@ -128,7 +128,7 @@ No new OCR pipeline is implemented.
 Submit through the [organiser website](https://hackapertus.ch/online-hack/submissions),
 selecting Track 2A - OpenParlData: public GitHub repository with converter,
 Apertus prompts, validator and README samples; technical report PDF **<=6 pages**.
-The Markdown report is still a draft.
+The [report PDF](technical_report.pdf) is included alongside its [Markdown source](technical_report.md).
 
 The [event terms](https://hackapertus.ch/terms-and-conditions) specify Apache-2.0
 for code/weights, CC-BY-4.0 for non-code output and CDLA-Permissive-2.0 for

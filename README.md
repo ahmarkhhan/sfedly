@@ -38,7 +38,15 @@ make run
 ```
 
 Then open **http://localhost:8765** and try the built-in **replay demo** — a synthetic
-practice document with recorded model output, fully offline.
+practice document with authored suggestions. The demo makes no model calls; the first image build needs internet access.
+
+Without GNU Make, run this from the repository root (also works in PowerShell):
+
+```powershell
+docker compose -f track_2a/compose.yaml up --build --wait --wait-timeout 90
+```
+
+Stop it with `docker compose -f track_2a/compose.yaml down`; saved reviews remain in the named volume.
 
 **Useful commands**
 
@@ -52,7 +60,7 @@ practice document with recorded model output, fully offline.
 | `SKONY_PORT=9000 make run` | Use a different host port |
 
 **Live extraction with Apertus (optional):** put your CSCS endpoint + API key in
-`track_2a/.env` (see `track_2a/.env.example`), then upload a real parliamentary PDF.
+`track_2a/.env` (copy `track_2a/.env.example`), set `SKONY_MODE=live` in that file, and rerun the launch command. Then upload a real parliamentary PDF and explicitly start extraction.
 Details: [Docker running guide](track_2a/docs/RUNNING.md).
 
 ## ⚙️ How the components work
@@ -152,7 +160,7 @@ sfedly/
 - [Current implementation status](track_2a/docs/BUILD_STATUS.md)
 - [Run and update the Docker/replay version](track_2a/docs/RUNNING.md)
 - [Run extraction and the review workbench](track_2a/docs/DEVELOPMENT.md)
-- [Active technical report draft](track_2a/technical_report.md)
+- [Technical report PDF](track_2a/technical_report.pdf) and [source](track_2a/technical_report.md)
 
 **Evidence and limits**
 
