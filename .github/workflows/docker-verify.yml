@@ -52,6 +52,7 @@ jobs:
 
       - name: Publish machine-readable report to the docker-check branch
         if: always()
+        continue-on-error: true
         run: |
           set -ex
           mkdir -p /tmp/report
