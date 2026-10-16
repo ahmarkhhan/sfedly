@@ -11,12 +11,27 @@ Status: extraction and local review implementation, 16 October 2026. One
 real-document pilot is complete; dataset-level extraction accuracy has not been
 measured. Measured run evidence: [RESULTS](docs/RESULTS.md).
 
+## Judging criteria and where they are addressed
+
+| Criterion (official brief wording) | Where it is addressed | State |
+|---|---|---|
+| Insight: a well-founded conclusion on common-schema feasibility; partial or negative counts | [Honest limits](#honest-limits); [RESULTS](docs/RESULTS.md#honest-limits) | Partial: a common raw-field representation proved feasible for the eight-field slice tested; the unresolved seam is question/answer pairing and role assignment across bodies |
+| Breadth: demonstration across document types, languages and levels of government | [RESULTS §Measured runs](docs/RESULTS.md#measured-runs); corpus integrity table in [PIPELINE_VERIFICATION](docs/PIPELINE_VERIFICATION.md) | Narrow but real: DE + FR, two bodies (municipal Nidau, cantonal Genève), born-digital plus one scanned/OCR-layer document; a 44-PDF hash-verified corpus awaits review |
+| Traceability and faithfulness: no invented values; span-level provenance; flag rather than guess | [Implemented first slice](#implemented-first-slice); `src/skony/verify.py` (abstains on unlocated, fabricated or ambiguous evidence); strict-validation rejection tests in `tests/test_evidence.py` | Implemented: every non-null field carries document ID, page, original quote and character offsets; unverifiable values abstain |
+| Built with Apertus | `src/prompts/extract.txt`; [RESULTS](docs/RESULTS.md) (recorded `swiss-ai/Apertus-v1.5-70B` runs with token and latency observations) | Yes, at CSCS; development-time only, not redistributed |
+| Reusable outputs: public repository with converter, prompts, validator and README samples | [README](README.md) quick-start; [RESULTS §Reproduce](docs/RESULTS.md#reproduce-public-source-no-credentials-no-docker); hash-checked synthetic fixture in `data/sample/`; 131-test offline suite | Yes, without credentials or network: replay reproduces recorded results byte-identically |
+| Judge execution: `make run` in Docker | root and track `Makefile`, `Dockerfile`, `compose.yaml`, `scripts/check_docker.py`, CI workflow `.github/workflows/docker-verify.yml` | Packaged, unverified on the development host (no Docker/WSL there); the clean public-source start passes outside a container |
+
 ## Problem and contribution
 
 Investigate which parliamentary affair fields can share a common representation
 across bodies and languages. Preserve original wording, explicitly abstain when
 evidence cannot be located, and record where the shared schema cannot represent
-the source faithfully.
+the source faithfully. Our partial conclusion: a common raw-field
+representation is feasible for the eight-field slice tested — fields were
+located with original wording and spans across one DE municipal and one FR
+cantonal document — while question/answer pairing and role assignment
+across bodies remain the unresolved seam.
 
 ## Implemented first slice
 
@@ -79,7 +94,45 @@ precision/recall, abstention/coverage, source-location accuracy, question/answer
 pairing, latency and actual token usage. Scans and minority layouts must remain
 visible in the report rather than being filtered out of the denominator.
 
-## Current limitations
+## Honest limits
+
+Each bullet states a limitation, its consequence and where the evidence is.
+This section, not the feature list, is the insight contribution.
+
+- **Two documents are not coverage.** Model responses exist for exactly two
+  real PDFs, both team-selected. Nothing measures accuracy on unseen
+  documents; breadth above is corpus breadth, not measured extraction
+  breadth. Evidence: [RESULTS](docs/RESULTS.md).
+- **In-sample tuning.** The prompt (`raw-v0.2`) and verifier (`evidence-v0.2`)
+  were shaped on the same pilot documents that demonstrate them. The replay
+  results are self-consistent by construction, not evidence of
+  generalisation. Evidence: [PIPELINE_VERIFICATION](docs/PIPELINE_VERIFICATION.md).
+- **No gold, no rates.** Twelve human field decisions exist but are not
+  competence-checked, and one reviewed source language is unrecorded.
+  Precision, recall and abstention rates would be fabricated today, so none
+  are presented. Evidence: [RESULTS §Review and gold-set state](docs/RESULTS.md#review-and-gold-set-state).
+- **Located is not correct.** `source_located` proves a string match, not
+  semantic assignment: a value can occupy the right span and the wrong field.
+  Every located field therefore requires review; question/answer pairing is
+  unvalidated. Evidence: [Implemented first slice](#implemented-first-slice).
+- **Docker is packaged, not proven.** No container has been built on the
+  development host (no Docker/WSL); the CI workflow and `scripts/check_docker.py`
+  are ready but unexecuted there. The official judge path could therefore
+  fail on first contact; `scripts/check_clean_start.py` covers the
+  non-container path. Evidence: [PIPELINE_VERIFICATION](docs/PIPELINE_VERIFICATION.md).
+- **One previously flaky test.** `test_mutation_requires_token_and_matching_origin`
+  in `tests/test_review.py` failed intermittently on the development host; it
+  passed five consecutive runs on 16 October and the fresh-clone suite is
+  131/131. Named so a judge re-running it is not surprised. Evidence:
+  `python -m unittest tests.test_review.ServerTests.test_mutation_requires_token_and_matching_origin`.
+- **Heuristic roles and languages.** Corpus role and level tags are heuristic
+  hints; 13 of 45 manifest rows are unknown-language. Level-of-government
+  breadth claims wait for reviewed metadata. Evidence:
+  [BUILD_STATUS](docs/BUILD_STATUS.md).
+- **Conservative matching has blind spots.** Whitespace-only recovery cannot
+  bridge OCR reflow, and the corrupt-name marker does not catch all
+  corruption. Some real values will read as abstentions until review —
+  accepted as the price of never guessing. Evidence: `src/skony/verify.py`.
 
 The local workbench displays PDF page images, source text and highlighted spans.
 Reviewers can confirm, correct, record absence or undo. Decisions are separate
@@ -89,7 +142,8 @@ Exports contain reviewed fields only, plus a list of remaining unreviewed fields
 Reviewer identity is a self-entered label; multi-user authentication is not implemented.
 
 No OCR, multi-page field assembly, controlled vocabulary mapping,
-cross-body query interface or gold-set evaluation is implemented yet. The Docker
+cross-body query interface or gold-set evaluation is implemented yet;
+the seam named above is design work, not completed work. The Docker
 runner is packaged but has not been built/run in this environment. Whitespace-only
 matching recovers some layout differences but preserves
 wording, punctuation and original offsets. Other OCR/layout differences still

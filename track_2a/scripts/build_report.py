@@ -48,12 +48,23 @@ PAGE_WIDTH, PAGE_HEIGHT = A4
 MARGIN_X, MARGIN_TOP, MARGIN_BOTTOM = 16 * mm, 15 * mm, 15 * mm
 
 
+ZWSP = "\u200b"  # zero-width space: lets long paths wrap without visible change
+
+
+def _break_separators(fragment: str) -> str:
+    for sep in ("/", "_", "-", "."):
+        fragment = fragment.replace(sep, sep + ZWSP)
+    return fragment.replace(" " + ZWSP, " ")
+
+
 def inline(text: str) -> str:
     """Markdown inline subset -> reportlab paragraph XML."""
     text = html.escape(text)
     text = re.sub(r"``(.+?)``", r'<font face="Courier">\1</font>', text)
     text = re.sub(r"`(.+?)`", r'<font face="Courier">\1</font>', text)
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
+    # Break hints inside text only, never inside tags.
+    return re.sub(r"(^|>)([^<]+)", lambda m: m.group(1) + _break_separators(m.group(2)), text)
 
     def link(match: re.Match) -> str:
         label, url = match.group(1), match.group(2)
@@ -72,8 +83,10 @@ def table_block(rows: list[list[str]]) -> Table:
     mins, weights = [], []
     for col in range(len(head)):
         column = [head[col]] + [r[col] for r in body]
+        # Cells get zero-width break hints in inline(), so the min width tracks
+        # a mid-length token, not the longest unbreakable word.
         longest_word = max(len(word) for cell in column for word in cell.split())
-        mins.append(longest_word * char_width + padding)
+        mins.append(min(longest_word, 14) * char_width + padding)
         longest_cell = max(len(c) for c in column)
         weights.append(max(longest_cell, 8) ** 0.5)
     remaining = usable - sum(mins)

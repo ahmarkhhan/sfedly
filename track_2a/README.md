@@ -92,7 +92,8 @@ No new OCR pipeline is implemented.
 Submit through the [organiser website](https://hackapertus.ch/online-hack/submissions),
 selecting Track 2A - OpenParlData: public GitHub repository with converter,
 Apertus prompts, validator and README samples; technical report PDF **<=6 pages**.
-The Markdown report is still a draft.
+The report opens with a judging-criteria → evidence map so reviewers can
+verify each claim where it lives.
 
 The [event terms](https://hackapertus.ch/terms-and-conditions) specify Apache-2.0
 for code/weights, CC-BY-4.0 for non-code output and CDLA-Permissive-2.0 for
