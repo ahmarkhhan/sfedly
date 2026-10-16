@@ -1,7 +1,14 @@
 # Build status — 16 October 2026
 
 Target: Hack Apertus **online**, Track 2A / OpenParlData. Deadline: 16 October,
-12:00 CEST = **15:00 Asia/Karachi**. This is a starter, not a complete submission.
+12:00 CEST = **15:00 Asia/Karachi**.
+
+**Current submission status:** [engineering checks](https://github.com/ahmarkhhan/sfedly/actions/runs/38883803672)
+and [Docker verification](https://github.com/ahmarkhhan/sfedly/actions/runs/38883803830)
+passed. A [four-document gold set](../data/gold/README.md) is published;
+independent held-out accuracy remains unmeasured. The dated implementation
+records below preserve earlier checkpoints, including gates that were pending
+at the time; use this status and the repository README for current readiness.
 
 Current design authority: [project direction](../../docs/16-project-direction.md).
 Implementation priorities and acceptance evidence are in the

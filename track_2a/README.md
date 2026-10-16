@@ -27,10 +27,12 @@ MappingRule-compatible and never overwrite raw values. A structural
 inventory (`skony.structure`, census in docs/STRUCTURE.md) detects annexes,
 embedded images and table regions corpus-wide with provenance — inventory,
 not interpretation.
-**245 Python engineering tests and 16 interface-controller tests** pass. Two previously processed real DE/FR PDFs replayed
-with identical results and **zero model calls**. Actual container execution,
-human gold evaluation, semantic extraction accuracy and relation review remain
-pending. The main extraction screen still uses v0.1; v0.2 HTTP extraction imports
+The [engineering checks](https://github.com/ahmarkhhan/sfedly/actions/runs/38883803672)
+and [Docker verification](https://github.com/ahmarkhhan/sfedly/actions/runs/38883803830)
+passed on 16 October 2026. Two previously processed real DE/FR PDFs replayed
+with identical results and **zero model calls**. A [four-document gold set](data/gold/README.md)
+is published; it is small, single-annotator and in-sample. Held-out semantic
+accuracy and relation review remain pending. The main extraction screen still uses v0.1; v0.2 HTTP extraction imports
 recorded output. New v0.2 fixtures and browser checks are synthetic.
 
 ## Direction and evidence
@@ -57,8 +59,8 @@ recorded output. New v0.2 fixtures and browser checks are synthetic.
 From the repository root or this directory, use `make run`. Without Make, run
 `docker compose up --build --wait --wait-timeout 90` from this directory.
 Open [Skony](http://localhost:8765). Docker Engine/Desktop with Linux containers
-and Compose v2 is required. The container build has not been verified here;
-see the [running guide](docs/RUNNING.md) for prerequisites and exact status.
+and Compose v2 is required. Container build, startup, previews and review
+persistence passed in CI; see the [running guide](docs/RUNNING.md).
 
 The default replay demonstration uses a bundled **synthetic practice document**
 with authored suggestions, clearly labelled as neither Apertus output nor gold.
@@ -91,28 +93,29 @@ live extraction even when credentials exist; no silent model fallback is used.
 python -m unittest discover -s tests
 ~~~
 
-**245 Python engineering tests and 16 interface-controller tests passed on 16 October 2026.** Run
+**Python engineering tests and 16 interface-controller tests passed in CI on 16 October 2026.** Run
 `node --test tests/evidence-ui.test.cjs tests/explorer-ui.test.cjs tests/scoped-ui.test.cjs` for the controller checks.
 They do not establish real
 model accuracy or multilingual coverage.
 
-## Judge execution: required, still pending
+## Judge execution and verification
 
 The [official template](https://github.com/HackApertus/project-template/blob/main/track_2a/README.md)
 requires Docker execution through make run from the selected project root.
 Keep track_2a/. Dockerfile/Compose/Makefiles and the public practice seed now
-exist. Clean-source startup, previews and restart persistence pass with local
-Python dependencies; Docker build/run/rebuild verification remains pending.
+exist. Clean-source startup, previews and restart persistence pass, and
+[Docker build/run/rebuild verification passed in CI](https://github.com/ahmarkhhan/sfedly/actions/runs/38883803830).
 Run `python scripts/check_docker.py` on an engine host for the full check.
-Real-response batching/caching and the field scorer work; competent human gold
-annotation and measured evaluation are next.
+Real-response batching/caching and the field scorer work. The published gold
+set contains four reviewed documents; independent held-out evaluation remains pending.
 
 ## Source data and limitations
 
 The private corpus has 44 downloaded PDFs and one preserved failed download.
 Two DE/FR PDFs now have cached real Apertus responses, in addition to the older
-Nidau pilot. Redistribution rights and a frozen reviewed evaluation set are
-pending; the bundled synthetic fixture is an engineering demonstration only.
+Nidau pilot. Private source PDFs are not bundled. Four reviewed annotation
+records are published in [data/gold](data/gold/README.md); the bundled synthetic
+fixture is an engineering demonstration only.
 The selected data/ directory must remain <=100 MB.
 
 The main v0.1 extraction workflow represents one page/quote per field. The v0.2

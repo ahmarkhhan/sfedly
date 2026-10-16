@@ -28,10 +28,11 @@ Open [Skony](http://localhost:8765). The image contains pinned Python
 dependencies, Poppler and a public synthetic fixture. Private data, local env
 files and previous workbench output are excluded from the build context.
 
-**Verification status:** application tests and clean-source startup passed;
-the Docker image itself has not been built here because no Docker engine is
-available. The container release gate remains open until a Docker run passes.
-The local verifier currently records Docker as unavailable; WSL is also absent.
+**Verification status:** [engineering checks](https://github.com/ahmarkhhan/sfedly/actions/runs/38883803672)
+and [Docker verification](https://github.com/ahmarkhhan/sfedly/actions/runs/38883803830)
+passed on 16 October 2026, including container startup, PDF/image previews and
+review persistence across rebuilding. Earlier local checks lacked Docker/WSL;
+the linked CI run provides the container execution evidence.
 On an engine host, run `python scripts/check_docker.py` (or `make verify-docker`).
 It builds/tests an isolated QA project, checks original PDF/image preview and
 review persistence across rebuilding/recreation, then removes its own QA volume.

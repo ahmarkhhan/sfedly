@@ -5,8 +5,9 @@ separated below. The public commands reproduce engineering checks and the
 synthetic replay; private pilot inputs and cache responses are not bundled. These are **engineering and provenance results**: they show that the
 private pilot pipeline replayed recorded Apertus output with zero model
 calls, and where its evidence checks abstain or reject. **They do not
-establish extraction accuracy** — no human-reviewed gold set exists yet
-(see «Honest limits»).
+establish held-out extraction accuracy**. A small four-document, single-annotator
+gold set is now [published](../data/gold/README.md); its in-sample limitations
+are described below.
 
 ## Reproduce (public source, no credentials, no Docker)
 
@@ -32,7 +33,7 @@ Poppler for page previews.
 | Local regression suite | **245 Python tests and 16 interface tests passed**, Python 3.11 / Node 24, 16 October 2026 |
 | Clean public-source start | Preview, review, restart persistence, export and replay rejection of live calls pass without credentials or private files |
 | Private corpus integrity | 44 of 45 manifest rows parse with matching pinned hashes; row 45 is a preserved failed download |
-| Docker execution | **Not verified here** (no Docker/WSL on the build host); `scripts/check_docker.py` and CI are ready for an engine host |
+| Docker execution | [CI verification passed on 16 October](https://github.com/ahmarkhhan/sfedly/actions/runs/38883803830): build, startup, previews and review persistence |
 
 ## Measured runs
 
@@ -113,10 +114,10 @@ in scope. The same documents shaped prompt `raw-v0.2` and verifier
 `evidence-v0.2`, so the number measures self-consistency, not generalisation.
 Evidence: `output/gold-agreement.json` (private, with the review store).
 
-The gold annotation files contain verbatim source quotes and are retained
-with the private corpus until item-level source licences are stated; the
-export tooling, manifest format and competence disclosure are public in
-`scripts/export_gold.py`. Held-out precision/recall and a baseline comparison
+The four gold annotation files and checksummed manifest are published in
+[data/gold](../data/gold/README.md); original source PDFs and the review store
+remain private. Export tooling is in `scripts/export_gold.py`.
+Held-out precision/recall and a baseline comparison
 remain planned work (see `technical_report.md`, «Planned evaluation»).
 
 ## Honest limits

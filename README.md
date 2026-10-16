@@ -6,7 +6,7 @@
 > before it enters a reviewed export.
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
-![Tests](https://img.shields.io/badge/tests-247%20Python%20%2B%2016%20UI%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-257%20Python%20%2B%2016%20UI%20passing-brightgreen)
 ![Docker](https://img.shields.io/badge/docker-6%2F6%20checks%20passing-blue)
 ![Languages](https://img.shields.io/badge/languages-DE%20%C2%B7%20FR%20%C2%B7%20IT%20%C2%B7%20RM%20%C2%B7%20EN-orange)
 
@@ -17,7 +17,7 @@
 ## 💡 What it does — 30-second intro
 
 - **The problem:** parliaments publish decisions as PDFs — hard to search, compare, or reuse. Pure LLM extraction hallucinates; pure manual work doesn't scale.
-- **The answer:** every extracted field carries a **verbatim quote + page number** from the source PDF. Unreviewed suggestions **never** reach an export.
+- **The answer:** extracted suggestions carry source evidence for inspection. Reviewed exports include only accepted values; explorer research briefs can also include explicitly labelled unreviewed suggestions.
 - **The payoff:** researchers get cited, filterable dossiers in seconds; reviewers get one-click evidence inspection; everyone gets a full audit trail.
 - **One prompt, five languages:** German, French, Italian, Romansh, English.
 
@@ -90,7 +90,7 @@ Details: [Docker running guide](track_2a/docs/RUNNING.md).
 ```
 
 - **No evidence, no field:** the validator rejects records without verbatim page/quote support.
-- **Human gate:** extraction output is a *suggestion*; only reviewed values are exported.
+- **Human gate:** extraction output is a *suggestion*. Reviewed exports require explicit review; explorer research briefs retain review labels and offer a reviewed-only filter.
 - **Replayable:** recorded model responses let anyone verify the pipeline with zero model calls.
 
 ## 🖥️ The three screens
@@ -117,7 +117,7 @@ Details: [Docker running guide](track_2a/docs/RUNNING.md).
 - ✅ Real CSCS pilot completed; live extraction against Apertus on CSCS infrastructure.
 - ✅ Review workbench: original pages, source checks, persistent corrections, audit history, reviewed-only exports — persistence survives container rebuilds.
 - ✅ Docker image passed the full build/run check on 16 Oct 2026 (image build, in-container tests, health + PDF/image preview, non-root runtime, review-state persistence, disposable cleanup).
-- ✅ **247 Python engineering tests + 16 interface-controller tests** green (16 October 2026).
+- ✅ **257 Python engineering tests + 16 interface-controller tests** passed on 16 October 2026.
 - ✅ v0.2 contracts at `/scoped`: dependency-aware scoped review, immutable offline comparison, legacy migration, gold eligibility/scoring, capability-based citations.
 
 **Not claimed**
@@ -132,7 +132,7 @@ Details: [Docker running guide](track_2a/docs/RUNNING.md).
 > **Roadmap only.** Everything below is post-hackathon design intent — none of it is
 > an implemented capability or a measured result today.
 
-Skony's architecture is built to grow along four axes. **First, scale the evaluation:** expand the frozen gold set from four single-annotator documents to a multi-annotator, cross-parliament corpus, so per-field and cross-language accuracy can finally be measured rather than assumed — the pipeline already exposes the eligibility and scoring hooks for it. **Second, broaden coverage:** extend the record schema beyond request/answer affairs to motions, votes, and committee reports, and onboard additional cantonal and municipal bodies through the existing affair-type mapping layer. **Third, deepen the tooling:** migrate the main extraction screen from v0.1 to the v0.2 contracts, add batch review queues with inter-annotator agreement metrics, and ship a public read-only API over the reviewed export so researchers can query cited records programmatically. **Fourth, harden the evidence loop:** automatic re-verification of stored citations when source PDFs are re-published, drift detection across extraction runs, and confidence-ranked field suggestions so reviewers spend time where the model is least sure. Each of these lands as a validated contract extension — with the same rule that holds today: nothing enters an export without evidence and a human decision behind it.
+Planned work includes a larger independently annotated evaluation set, broader parliamentary coverage, migration of the main extraction screen to v0.2 contracts, batch review queues, and citation re-verification. Reviewed exports will continue to require evidence and a human decision; research briefs retain explicit review-status labels.
 
 ## 📁 Repository layout
 
