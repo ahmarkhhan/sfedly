@@ -1,15 +1,15 @@
-# skony.vocab.affair-types v0.1-draft (2026-10-16)
+# skony.vocab.affair-types v0.1.1-draft (2026-10-16)
 # Controlled vocabulary for affair types. Status: DRAFT - IDs are stable,
 # labels/aliases grow as the gold set is annotated. Hierarchical via `broader`.
 # Mapping reference targets (see docs/VOCABULARY.md):
 #   oparl   - OParl 1.1 paperType / consultation usage (de-facto standard for
 #             municipal/cantonal bodies, closest match to parliamentary Vorstoesse)
 #   akn     - Akoma Ntoso 3.0 documentTypeURI (naming alignment only)
-#   eCH     - eCH-0039 parliamentary affair service types (Swiss, 4 service
-#             types A-D; aliases mark membership where known)
+# eCH-0039 is a dossier/document exchange interface, not an affair-type
+# taxonomy. No eCH affair-type mappings are asserted.
 vocabulary:
   id: skony.vocab.affair-types
-  version: v0.1-draft
+  version: v0.1.1-draft
   status: draft
   updated: 2026-10-16
 terms:
@@ -46,7 +46,7 @@ terms:
     pref: {en: Postulate, de: Postulat, fr: Postulat}
     def: Request that the government examine a matter and report back; the government is asked to act, not to answer.
     broader: at.motion-family
-    maps: {oparl: Postulat, akn: /akn/.../postulat, eCH: "B"}
+    maps: {oparl: Postulat, akn: /akn/.../postulat}
     aliases:
       de: [Postulat, Dringliches Postulat]
       fr: [Postulat, Postulat urgent]
@@ -54,9 +54,9 @@ terms:
     pref: {en: Motion, de: Motion, fr: Motion}
     def: Binding instruction to the government to take a defined action (typically to prepare legislation or an administrative measure).
     broader: at.motion-family
-    maps: {oparl: Motion, akn: /akn/.../motion, eCH: "A"}
+    maps: {oparl: Motion, akn: /akn/.../motion}
     aliases:
-      de: [Motion, Dringliche Motion, Standesinitiative]
+      de: [Motion, Dringliche Motion]
       fr: [Motion, Motion urgente]
   - id: at.motion-family
     pref: {en: Motion-like affair (generic), de: Motionstyp (generisch), fr: Affaire de type motion (generique)}
@@ -69,7 +69,7 @@ terms:
     pref: {en: Parliamentary initiative, de: Parlamentarische Initiative, fr: Initiative parlementaire}
     def: Initiative from within parliament proposing a legal text or constitutional change directly.
     broader: at.motion-family
-    maps: {akn: /akn/.../bill, eCH: "C"}
+    maps: {akn: /akn/.../bill}
     aliases:
       de: [Parlamentarische Initiative]
       fr: [Initiative parlementaire]

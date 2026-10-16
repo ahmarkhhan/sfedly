@@ -66,6 +66,19 @@ structural inventory.
 The command accepts either a cohort JSON or the standard `{"cohort": ...}`
 request and writes a matching Markdown view beside the JSON.
 
+The `schema-review-packet` operation prepares source-only human tasks for
+selected body/concept/unit combinations. It requires human-verified intake and
+the exact pinned text snapshots; each task starts with an empty judgment and
+contains no model output. It does not create a feasibility finding. Submit the
+completed, evidence-backed judgments separately to `feasibility`.
+
+The `cross-body-report` operation turns a frozen comparison snapshot and its
+`ComparisonSpec` into a source-cited Markdown report. It accepts only reviewed
+claims attached to reviewed affair membership and matching pinned source
+records. The report preserves per-body values and mapping caveats without
+inferring pooled rates or semantic conclusions. If the snapshot has historical
+withdrawal/supersession status, wrap it as `{"snapshot": ..., "historical_warning": true|false}`.
+
 ## Human intake and gold
 
 In `intake-review-packet.json`, each unit has a `review` slot. A real intake

@@ -67,11 +67,14 @@ provenance, matching our page+span model). Where the current pipeline extracts
 page text only, annexes/tables are flagged `textless`/unmapped rather than
 silently dropped.
 
-**eCH-0039** (Swiss parliamentary-affair services) defines only 4 coarse
-service types (A legislative mandate, B examination mandate, C initiative,
-D other). `at.motion`, `at.postulate`, `at.parliamentary-initiative`,
-`at.government-report` carry their eCH class in `maps` where the assignment
-is unambiguous; eCH has no finer vocabulary to align with.
+**eCH-0039** standardizes exchange of electronic dossiers and documents;
+it is not used here as an affair-type taxonomy. The unsupported A/B/C
+type mappings were removed in v0.1.1-draft.
+Source: [official eCH-0039 catalogue](https://www.ech.ch/de/node/455091).
+
+`Standesinitiative` is no longer a Motion alias. It remains explicitly
+unmapped until a separate reviewed vocabulary term is introduced.
+Source: [Swiss Parliament: initiatives and interventions](https://www.parlament.ch/de/%C3%BCber-das-parlament/Seiten/parlamentarische-initiativen-standesinitiativen-und-vorstoesse.aspx).
 
 ## Deterministic mapping rules (v1)
 

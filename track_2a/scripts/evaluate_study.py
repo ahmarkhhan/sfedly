@@ -12,6 +12,7 @@ from skony.client import Settings
 from skony.contracts import TextSnapshot
 from skony.evaluation_api import OPERATIONS, evaluate, schemas
 from skony.evaluation_insights import corpus_coverage_markdown, matrix_markdown
+from skony.research_report import cross_body_report_markdown
 from skony.experiments import ExperimentInput, run_experiment, run_variants
 from skony.relations import relation_packet
 from skony.study import field_packet, inspect_manifest
@@ -85,6 +86,8 @@ def main():
         args.out.with_suffix(".md").write_text(matrix_markdown(result), encoding="utf-8")
     elif args.operation == "coverage":
         args.out.with_suffix(".md").write_text(corpus_coverage_markdown(result), encoding="utf-8")
+    elif args.operation == "cross-body-report":
+        args.out.with_suffix(".md").write_text(cross_body_report_markdown(result), encoding="utf-8")
     print(json.dumps({"operation": args.operation, "output": str(args.out),
                       "passed": result.get("passed", result.get("gate_passed")),
                       "live_calls": result.get("live_calls", result.get("recordings", {}).get("live_calls", 0))}))

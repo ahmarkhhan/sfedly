@@ -4,12 +4,14 @@ from pydantic import Field
 
 from .contracts import StrictModel, TextSnapshot
 from .evaluation_insights import (FeasibilityJudgment, PDFAddition, corpus_coverage, feasibility_matrix,
-                                  metadata_baseline, novelty_report)
+                                  feasibility_review_packet, metadata_baseline, novelty_report)
 from .evaluation_protocol import Reviewer, ReviewSession, UpliftDesign, review_protocol, review_uplift
 from .experiments import ExperimentInput, freeze_experiment, score_experiment
 from .gold import GoldUnit, Prediction
+from .research_report import cross_body_report
 from .relations import (RelationGold, RelationKind, RelationNode, RelationPrediction,
                         freeze_universe, merge_relation_packets, score_relations)
+from .review_contracts import ComparisonSpec
 from .study import SplitLink, StudyPolicy, StudyUnit, freeze_cohort
 from .evaluation_status import research_readiness
 
@@ -110,6 +112,20 @@ class CoverageInput(StrictModel):
     structure_census: dict | None = None
 
 
+class SchemaReviewPacketInput(StrictModel):
+    cohort: dict
+    texts: list[TextSnapshot]
+    body_ids: list[str]
+    concepts: list[str]
+    selected_unit_ids: list[str]
+    reviewer_id: str
+
+
+class CrossBodyReportInput(StrictModel):
+    snapshot: dict
+    spec: ComparisonSpec
+
+
 OPERATIONS = {
     "cohort": (CohortInput, freeze_cohort),
     "relation-universe": (RelationUniverseInput, freeze_universe),
@@ -124,6 +140,8 @@ OPERATIONS = {
     "experiment-score": (ExperimentScoreInput, score_experiment),
     "readiness": (ReadinessInput, research_readiness),
     "coverage": (CoverageInput, corpus_coverage),
+    "schema-review-packet": (SchemaReviewPacketInput, feasibility_review_packet),
+    "cross-body-report": (CrossBodyReportInput, cross_body_report),
 }
 
 

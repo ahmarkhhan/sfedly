@@ -62,6 +62,15 @@ class TestMapping(unittest.TestCase):
         self.assertEqual(m.relation, "exact_in_scope")
         self.assertEqual(m.rule, "alias-exact")
 
+    def test_cantonal_initiative_is_not_silently_a_motion(self):
+        m = vocab.map_label(self.vocabs["affair_type"], "Standesinitiative")
+        self.assertIsNone(m.destination)
+        self.assertEqual(m.relation, "unmapped")
+
+    def test_no_unsupported_ech_affair_type_classes(self):
+        for term in self.vocabs["affair_type"].terms:
+            self.assertNotIn("eCH", term.maps)
+
     def test_exact_alias_fr(self):
         m = vocab.map_label(self.vocabs["decision_outcome"], "Adopté")
         self.assertEqual(m.destination, "outcome.adopted")

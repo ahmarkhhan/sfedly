@@ -243,6 +243,65 @@ def corpus_coverage_markdown(report: dict):
     return "\n".join(lines) + "\n"
 
 
+def feasibility_review_packet(cohort: dict, texts: list[TextSnapshot], body_ids: list[str], concepts: list[str],
+                              selected_unit_ids: list[str], reviewer_id: str):
+    """Prepare source-only human tasks without creating feasibility findings."""
+    units = load_cohort(cohort)
+    unique(body_ids, "schema review body")
+    unique(concepts, "schema review concept")
+    unique(selected_unit_ids, "schema review unit")
+    if not reviewer_id.strip() or not body_ids or not concepts or not selected_unit_ids:
+        raise ValueError("Schema review packet needs a reviewer, bodies, concepts and selected units")
+    if len(body_ids) * len(concepts) > 10000 or len(selected_unit_ids) * len(concepts) > 10000:
+        raise ValueError("Schema review packet exceeds the bounded task limit")
+    by_id = {unit.unit_id: unit for unit in units}
+    if set(selected_unit_ids) - set(by_id):
+        raise ValueError("Schema review packet selects units outside the frozen cohort")
+    if set(body_ids) - {unit.body_id for unit in units}:
+        raise ValueError("Schema review packet requests a body outside the frozen cohort")
+    selected = [by_id[unit_id] for unit_id in selected_unit_ids]
+    if {unit.body_id for unit in selected} != set(body_ids):
+        raise ValueError("Every requested body must have at least one selected review unit")
+    if any(not unit.verified for unit in selected):
+        raise ValueError("Schema review requires human-verified language, role and affair intake")
+    by_artifact = {}
+    for text in texts:
+        if text.artifact_id in by_artifact:
+            raise ValueError("Schema review source texts must be unique by artifact")
+        by_artifact[text.artifact_id] = text
+    tasks = []
+    for unit in sorted(selected, key=lambda value: value.unit_id):
+        text = by_artifact.get(unit.artifact_id)
+        if text is None:
+            raise ValueError("Every selected schema review unit needs its pinned source text")
+        for concept in concepts:
+            tasks.append({
+                "unit_id": unit.unit_id,
+                "artifact_id": unit.artifact_id,
+                "scope_id": unit.scope_id,
+                "body_id": unit.body_id,
+                "language": unit.review.language,
+                "jurisdiction_level": unit.review.jurisdiction_level,
+                "document_role": unit.review.role,
+                "checked_pages": unit.review.checked_pages,
+                "concept": concept,
+                "text_snapshot": text.model_dump(),
+                "judgment": None,
+            })
+    return seal({
+        "schema_version": "skony.schema-review-packet.v1",
+        "cohort_digest": cohort["digest"],
+        "reviewer_id": reviewer_id.strip(),
+        "body_ids": sorted(body_ids),
+        "concepts": concepts,
+        "selected_unit_ids": sorted(selected_unit_ids),
+        "model_outputs_included": False,
+        "human_findings_created": 0,
+        "tasks": tasks,
+        "instruction": "Review the pinned source only. Record an evidence-backed FeasibilityJudgment separately; unknown or absent from this source is not proof of schema-wide absence.",
+    })
+
+
 def pointer(document, path: str):
     """RFC 6901-style local lookup; an absent path stays explicitly unavailable."""
     if path == "":

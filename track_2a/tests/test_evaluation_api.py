@@ -11,7 +11,8 @@ from src.skony.evaluation_status import research_readiness
 from src.skony.server import Workbench, make_handler
 from src.skony.study import StudyPolicy
 from src.skony.evaluation_common import seal
-from evaluation_helpers import AT, cohort_for, study_unit
+from evaluation_helpers import AT, cohort_for, source, study_unit
+from test_research_report import snapshot_fixture
 
 
 class EvaluationServiceTests(unittest.TestCase):
@@ -19,6 +20,8 @@ class EvaluationServiceTests(unittest.TestCase):
         self.assertIn("relation-merge", schemas())
         self.assertIn("readiness", schemas())
         self.assertIn("coverage", schemas())
+        self.assertIn("schema-review-packet", schemas())
+        self.assertIn("cross-body-report", schemas())
         with self.assertRaises(ValueError):
             evaluate("cohort", {"units": [], "policy": {}, "frozen_at": AT, "extra": "not accepted"})
 
@@ -27,6 +30,21 @@ class EvaluationServiceTests(unittest.TestCase):
         self.assertFalse(report["research_evidence_ready"])
         self.assertIn("B2_independent_relation_gold", report["open_gates"])
         self.assertIn("B7_frozen_experiment_results", report["open_gates"])
+
+    def test_schema_review_packet_operation_only_returns_empty_tasks(self):
+        unit = study_unit("schema-packet")
+        cohort = cohort_for([unit])
+        report = evaluate("schema-review-packet", {"cohort": cohort, "texts": [source("schema-packet").model_dump()],
+            "body_ids": [unit.body_id], "concepts": ["title"], "selected_unit_ids": [unit.unit_id],
+            "reviewer_id": "reviewer-A"})
+        self.assertEqual(report["human_findings_created"], 0)
+        self.assertIsNone(report["tasks"][0]["judgment"])
+
+    def test_cross_body_report_is_exposed_as_an_offline_evaluation_operation(self):
+        snapshot, spec = snapshot_fixture()
+        report = evaluate("cross-body-report", {"snapshot": snapshot, "spec": spec.model_dump()})
+        self.assertEqual(report["bodies"], ["body-de", "body-fr"])
+        self.assertEqual(len(report["rows"]), 2)
 
 
 class EvaluationHTTPTests(unittest.TestCase):
