@@ -91,13 +91,33 @@ These are single-call observations, not a benchmark and not a model ranking.
 
 ## Review and gold-set state
 
-The store holds 12 human field decisions across four documents. One document
-passes the eight-decision mechanical export gate; its source language is
-unknown in metadata, and reviewer competence and semantic accuracy are not
-certified. **This is not a frozen evaluation gold set.** The gold column of
-any accuracy table is therefore pending by design: field precision/recall,
-abstention coverage and a baseline comparison remain planned work
-(see `technical_report.md`, «Planned evaluation»).
+**Frozen gold v1 (16 October 2026).** Four documents pass the eight-decision
+mechanical export gate and were exported with `scripts/export_gold.py` under a
+checksummed manifest (retained with the private corpus; manifest sha256 prefix
+`27332723140e1ad8`). Coverage: German 1 (municipal Nidau), French 3 (cantonal
+Genève ×2, cantonal Waadt ×1) — three bodies, two levels of government. Every
+one of the 32 field slots carries an explicit confirm / correct / absent human
+decision against the source PDF. Reviewers are team members (native-level DE
+and FR readers) following `docs/ANNOTATION_GUIDE.md`; single annotation per
+document, no inter-annotator agreement measured. One reviewed document's
+missing language metadata was corrected (Waadt → French) before export. 41
+imported documents remain unreviewed and are excluded by the gate.
+
+**First agreement measurement (development set, in-sample).** Comparing the
+recorded model suggestions with the frozen gold decisions across the 32 field
+slots: 31 agreements (19 confirmed values, 12 correct absences) and 1
+correction — a Genève title where the reviewer supplied the full verbatim
+title — giving field agreement 96.9% on this set. All 12 answer/decision
+slots were correctly absent: these are request-role documents without answers
+in scope. The same documents shaped prompt `raw-v0.2` and verifier
+`evidence-v0.2`, so the number measures self-consistency, not generalisation.
+Evidence: `output/gold-agreement.json` (private, with the review store).
+
+The gold annotation files contain verbatim source quotes and are retained
+with the private corpus until item-level source licences are stated; the
+export tooling, manifest format and competence disclosure are public in
+`scripts/export_gold.py`. Held-out precision/recall and a baseline comparison
+remain planned work (see `technical_report.md`, «Planned evaluation»).
 
 ## Honest limits
 

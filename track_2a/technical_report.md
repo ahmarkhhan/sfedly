@@ -3,21 +3,23 @@
 Repository: <https://github.com/ahmarkhhan/sfedly> (built from the HackApertus project template).
 Build and completion evidence: [BUILD_STATUS](docs/BUILD_STATUS.md).
 Scoped affair contracts and offline evaluation tooling are implemented;
-human-reviewed cross-body evaluation remains pending. Response caching, batch
+a frozen four-document human gold set (DE+FR, three bodies, two levels) exists
+with a first in-sample agreement measurement. Response caching, batch
 checkpoints, saved-result import and gold-export safeguards are implemented.
 Docker packaging and a synthetic practice replay exist; actual container
 execution is still unverified. [Pipeline evidence](docs/PIPELINE_VERIFICATION.md).
 
-Status: extraction and local review implementation, 16 October 2026. One
-real-document pilot is complete; dataset-level extraction accuracy has not been
-measured. Measured run evidence: [RESULTS](docs/RESULTS.md).
+Status: extraction and local review implementation, 16 October 2026. A
+four-document frozen gold set is exported and a first development-set
+agreement measured (31/32 field slots); held-out extraction accuracy has not
+been measured. Measured run evidence: [RESULTS](docs/RESULTS.md).
 
 ## Judging criteria and where they are addressed
 
 | Criterion (official brief wording) | Where it is addressed | State |
 |---|---|---|
 | Insight: a well-founded conclusion on common-schema feasibility; partial or negative counts | [Honest limits](#honest-limits); [RESULTS](docs/RESULTS.md#honest-limits) | Partial: a common raw-field representation proved feasible for the eight-field slice tested; the unresolved seam is question/answer pairing and role assignment across bodies |
-| Breadth: demonstration across document types, languages and levels of government | [RESULTS §Measured runs](docs/RESULTS.md#measured-runs); corpus integrity table in [PIPELINE_VERIFICATION](docs/PIPELINE_VERIFICATION.md) | Narrow but real: DE + FR, two bodies (municipal Nidau, cantonal Genève), born-digital plus one scanned/OCR-layer document; a 44-PDF hash-verified corpus awaits review |
+| Breadth: demonstration across document types, languages and levels of government | [RESULTS §Measured runs](docs/RESULTS.md#measured-runs); [RESULTS §Review and gold-set state](docs/RESULTS.md#review-and-gold-set-state) | Narrow but real: gold v1 spans DE + FR, three bodies (municipal Nidau, cantonal Genève, cantonal Waadt) and two levels of government; born-digital plus one scanned/OCR-layer document; a 44-PDF hash-verified corpus awaits review |
 | Traceability and faithfulness: no invented values; span-level provenance; flag rather than guess | [Implemented first slice](#implemented-first-slice); `src/skony/verify.py` (abstains on unlocated, fabricated or ambiguous evidence); strict-validation rejection tests in `tests/test_evidence.py` | Implemented: every non-null field carries document ID, page, original quote and character offsets; unverifiable values abstain |
 | Built with Apertus | `src/prompts/extract.txt`; [RESULTS](docs/RESULTS.md) (recorded `swiss-ai/Apertus-v1.5-70B` runs with token and latency observations) | Yes, at CSCS; development-time only, not redistributed |
 | Reusable outputs: public repository with converter, prompts, validator and README samples | [README](README.md) quick-start; [RESULTS §Reproduce](docs/RESULTS.md#reproduce-public-source-no-credentials-no-docker); hash-checked synthetic fixture in `data/sample/`; current offline engineering suite | Public synthetic replay runs without credentials; the real DE/FR cache replay requires privately retained inputs |
@@ -80,8 +82,21 @@ and an HTTP-rejecting transport, used two cached responses and produced identica
 verified results with zero model calls. One failed-fetch row remained in both
 ledgers. This demonstrates pipeline reuse, not semantic accuracy or multilingual
 benchmark coverage. Both results were imported without altering existing review
-decisions. The store has 12 decisions across four documents, one mechanically
-complete; it is not yet a frozen, competence-checked evaluation gold set.
+decisions.
+
+A frozen gold v1 set was exported on 16 October via `scripts/export_gold.py`:
+four documents, all eight fields each carrying an explicit human confirm /
+correct / absent decision (32 slots). Coverage: DE municipal Nidau ×1, FR
+cantonal Genève ×2, FR cantonal Waadt ×1 — three bodies, two levels. The
+export is checksummed (manifest sha256 prefix `27332723140e1ad8`) and excludes
+41 unreviewed imported documents by gate. Against the recorded model
+suggestions, 31 of 32 slots agree (19 confirmed values, 12 correct absences);
+the single correction was a Genève title the reviewer replaced with the full
+verbatim text — field agreement 96.9% on this development set. All 12
+answer/decision slots were correctly absent (request-role documents). The
+annotation files hold verbatim source quotes and stay with the private corpus
+until item-level source licences are stated; tooling and manifest format are
+public. Evidence: [RESULTS §Review and gold-set state](docs/RESULTS.md#review-and-gold-set-state).
 
 On one scanned Nidau postulate with an existing OCR layer, the 8B pilot first
 copied the schema and then returned inconsistent null/evidence combinations.
@@ -113,10 +128,12 @@ This section, not the feature list, is the insight contribution.
   were shaped on the same pilot documents that demonstrate them. The replay
   results are self-consistent by construction, not evidence of
   generalisation. Evidence: [PIPELINE_VERIFICATION](docs/PIPELINE_VERIFICATION.md).
-- **No gold, no rates.** Twelve human field decisions exist but are not
-  competence-checked, and one reviewed source language is unrecorded.
-  Precision, recall and abstention rates would be fabricated today, so none
-  are presented. Evidence: [RESULTS §Review and gold-set state](docs/RESULTS.md#review-and-gold-set-state).
+- **Small, single-annotator, in-sample gold.** Gold v1 is four documents,
+  FR-weighted (3 FR / 1 DE), each single-annotated by a team reviewer with no
+  inter-annotator agreement measured. The 96.9% agreement figure is computed
+  on the same documents that shaped the prompt and verifier — it is
+  self-consistency evidence, not a generalisation rate, and held-out
+  precision/recall remain unmeasured. Evidence: [RESULTS §Review and gold-set state](docs/RESULTS.md#review-and-gold-set-state).
 - **Located is not correct.** `source_located` proves a string match, not
   semantic assignment: a value can occupy the right span and the wrong field.
   Every located field therefore requires review; question/answer pairing is
@@ -173,4 +190,5 @@ tested.
 | Runtime: pydantic, httpx, pypdf, PyMuPDF (pinned in `requirements.txt`) | MIT / BSD-3-Clause; PyMuPDF AGPL-3.0 or commercial | PyMuPDF licensing must be satisfied when distributing the application; see upstream licence |
 | Apertus v1.5 via the CSCS endpoint (development time) | Apache-2.0 (model) | not redistributed |
 | OpenParlData source PDFs (private corpus) | source-specific terms | not redistributed; a source manifest must state item-level licences before any redistribution or before a dataset licence is applied to our own annotations |
+| Gold v1 annotations (4 documents, contain verbatim source quotes) | our decisions + source-specific quote terms | retained with the private corpus until item-level licences are stated; export tooling and manifest format are public |
 | Container base (`python:3.11-slim`, Poppler) | Debian package terms | runner image only |

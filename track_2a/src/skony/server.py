@@ -140,7 +140,7 @@ class Workbench:
     def render_image(self, source: Path, identifier: str, page: int):
         executable = shutil.which("pdftoppm")
         if not executable:
-            raise ReviewError("Page images are unavailable. Open the original PDF or use source text.", 503)
+            return self.render_image_pymupdf(source, identifier, page)
         directory = self.store.directory / "rendered" / identifier
         directory.mkdir(parents=True, exist_ok=True)
         # Separate cache from older previews rendered against the media box.
@@ -153,6 +153,28 @@ class Workbench:
                                     "-png", str(source), str(prefix)],
                                    capture_output=True, check=True, timeout=35)
                 except (subprocess.SubprocessError, OSError):
+                    raise ReviewError("The page image could not be rendered. Open the original PDF.", 503) from None
+        return target.read_bytes()
+
+    def render_image_pymupdf(self, source: Path, identifier: str, page: int):
+        directory = self.store.directory / "rendered" / identifier
+        directory.mkdir(parents=True, exist_ok=True)
+        prefix = directory / f"page-{page}-crop-v1"
+        target = prefix.with_suffix(".png")
+        with self.render_lock:
+            if not target.is_file():
+                try:
+                    import pymupdf
+                    with pymupdf.open(source) as pdf:
+                        if page < 1 or page > len(pdf):
+                            raise ReviewError("Page not found", 404)
+                        pg = pdf[page - 1]
+                        zoom = 1600 / pg.rect.width
+                        pix = pg.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom))
+                        pix.save(target)
+                except ReviewError:
+                    raise
+                except Exception:
                     raise ReviewError("The page image could not be rendered. Open the original PDF.", 503) from None
         return target.read_bytes()
 
