@@ -44,8 +44,7 @@ implementation claims unless confirmed in the build status and source code.
 | [13](13-online-sprint-plan.md) | Superseded sprint schedule |
 | [14](14-event-compliance-review.md) | Earlier compliance review |
 
-Source snapshots remain in research/. The old root report is preserved as a
-[labelled historical draft](archive/technical_report-liebefeld-draft.md).
+Source snapshots remain in research/.
 
 Original PDFs remain authoritative. Source location, semantic correctness and
 human approval are separate states. Preserve raw wording and derived origins.
