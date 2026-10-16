@@ -1,8 +1,9 @@
 # Results — 16 October 2026
 
-Everything on this page was produced by this repository, with the commands
-below. These are **engineering and provenance results**: they show that the
-pipeline reproduces recorded Apertus output from PDF bytes with zero model
+Current public checks and previously recorded private pilot observations are
+separated below. The public commands reproduce engineering checks and the
+synthetic replay; private pilot inputs and cache responses are not bundled. These are **engineering and provenance results**: they show that the
+private pilot pipeline replayed recorded Apertus output with zero model
 calls, and where its evidence checks abstain or reject. **They do not
 establish extraction accuracy** — no human-reviewed gold set exists yet
 (see «Honest limits»).
@@ -14,18 +15,21 @@ From `track_2a/`:
 ```powershell
 python -m pip install -r requirements.txt
 $env:PYTHONPATH = 'src'
-python -m unittest discover -s tests   # 131 tests, ~18 s, fully offline
+python -m unittest discover -s tests   # 245 engineering tests, no model calls
+node --test tests/evidence-ui.test.cjs tests/explorer-ui.test.cjs tests/scoped-ui.test.cjs
 python scripts/check_clean_start.py     # clean public copy: preview, review, export, replay guard
 python -m skony serve --mode replay --port 8765
 ```
 
 Replay mode verifies the bundled synthetic fixture hashes, applies the real
 evidence verifier, and refuses live extraction even when credentials exist.
-None of these three steps can make a model call.
+These offline checks and replay mode make no model calls. Install dependencies
+first; installation needs internet access. The clean-start verifier also needs
+Poppler for page previews.
 
 | Check | Observed result |
 |---|---|
-| Local regression suite | **131 tests passed**, Python 3.11, 17.805 s, 16 October 2026 |
+| Local regression suite | **245 Python tests and 16 interface tests passed**, Python 3.11 / Node 24, 16 October 2026 |
 | Clean public-source start | Preview, review, restart persistence, export and replay rejection of live calls pass without credentials or private files |
 | Private corpus integrity | 44 of 45 manifest rows parse with matching pinned hashes; row 45 is a preserved failed download |
 | Docker execution | **Not verified here** (no Docker/WSL on the build host); `scripts/check_docker.py` and CI are ready for an engine host |
@@ -97,13 +101,14 @@ abstention coverage and a baseline comparison remain planned work
 
 ## Honest limits
 
-- Only two real documents have ever produced model responses in this project,
+- The bounded DE/FR batch contains two real documents; the earlier scanned
+  Nidau pilot is recorded separately above. These are small selected pilots,
   and both were selected by the team. Nothing here measures accuracy on
   unseen documents.
 - `source_located` means a string was found in the unchanged page text; it
   does not establish correct semantic assignment — every located field still
   requires human review.
-- The 131 tests are engineering tests (mocked transports, synthetic
+- The 245 Python and 16 interface tests are engineering tests (mocked transports, synthetic
   fixtures). They protect the pipeline; they say nothing about model quality.
 - One 8B failure pair and one 70B success on a single scanned document do
   not rank models.

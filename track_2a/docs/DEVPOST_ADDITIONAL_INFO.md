@@ -13,7 +13,7 @@ Partial conclusion: a common raw-field representation proved feasible for the ei
 
 **Breadth** (document types, languages, levels of government)
 → docs/RESULTS.md "Measured runs" + corpus integrity table in docs/PIPELINE_VERIFICATION.md.
-Narrow but real: DE + FR, two bodies (Nidau municipal, Genève cantonal), born-digital plus one scanned/OCR-layer document; 44-PDF hash-verified corpus awaiting review. 131 offline engineering tests.
+Narrow but real: DE + FR, two bodies (Nidau municipal, Genève cantonal), born-digital plus one scanned/OCR-layer document; 44-PDF hash-verified corpus awaiting review. 245 Python and 16 interface engineering tests.
 
 **Traceability and faithfulness** (no invented values; span-level provenance; flag rather than guess)
 → src/skony/verify.py: every non-null field carries document ID, page, original quote and character offsets; fabricated or unlocatable evidence is rejected; unverifiable values abstain instead of guessing (tests/test_evidence.py).
@@ -22,7 +22,7 @@ Narrow but real: DE + FR, two bodies (Nidau municipal, Genève cantonal), born-d
 → src/prompts/extract.txt; recorded swiss-ai/Apertus-v1.5-70B runs at CSCS with token and latency observations (docs/RESULTS.md). Development-time only, not redistributed.
 
 **Reusable outputs** (public repo: converter, prompts, validator, README samples)
-→ 3-command reproduce path in docs/RESULTS.md — no credentials, no network: offline replay reproduces recorded results byte-identically; hash-checked synthetic sample in data/sample/.
+→ 3-command reproduce path in docs/RESULTS.md — after dependency installation, public synthetic replay needs no credentials or model calls; hash-checked synthetic sample in data/sample/. The real DE/FR cache replay needs private inputs.
 
 **Judge execution** (make run / Docker)
 → root + track_2a Makefile, Dockerfile (non-root, healthcheck), compose.yaml, scripts/check_docker.py, CI workflow docker-verify.yml.

@@ -11,7 +11,7 @@ from src.skony.affairs import AffairStore
 from src.skony.contracts import TextSnapshot, canonical
 from src.skony.migration import legacy_inventory, migrate
 from src.skony.review import ReviewAction, ReviewError, ReviewStore
-from src.skony.review_contracts import AffairRecord, ComparisonSpec, MappingRule, ScopeRecord
+from src.skony.review_contracts import AffairRecord, Claim, ComparisonSpec, MappingRule, ScopeRecord
 from src.skony.schema import Document, Page
 from v2_helpers import accept, claim_for, review_fixture
 
@@ -124,6 +124,21 @@ class ScopedReviewTests(unittest.TestCase):
         self.assertEqual(checked["completeness"]["semantic_completeness"], "complete_in_reviewed_scope")
         self.update_scope(lambda s: setattr(s.binding, "role", "minutes"))
         self.assertFalse(self.store.eligibility(checked["decision_id"])["eligible"])
+
+    def test_observed_continuation_stays_incomplete_without_chunk_history(self):
+        claim = Claim.model_validate(self.store.get(self.claim, "claim"))
+        claim.unsatisfied_continuation = True
+        claim_id = self.store.put_claim(claim)
+        for check in (None, True):
+            reviewed = accept(self.store, claim_id, self.scope, section_complete=check,
+                              boundary_checked=True, required_clauses_checked=True)
+            self.assertEqual(reviewed["completeness"]["semantic_completeness"], "incomplete")
+            self.assertIn("unsatisfied_continuation", reviewed["completeness"]["reasons"])
+        data = claim.model_dump()
+        data["chunk_outcomes"] = [{"chunk_id": "missing-manifest", "state": "interrupted",
+                                   "finish_reason": None, "response_valid": False}]
+        with self.assertRaisesRegex(ValueError, "coverage manifest"):
+            Claim.model_validate(data)
 
     def test_snapshot_and_query_replay_after_mapping_change_and_affair_split(self):
         mapping = MappingRule(key="local-type", body_id="body1", source_label="Motion", destination="request",

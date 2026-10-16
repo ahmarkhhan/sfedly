@@ -1,5 +1,12 @@
 # Gold annotation guide
 
+For the independently reviewed v0.2 study, follow the
+[evaluation implementation guide](EVALUATION_IMPLEMENTATION.md). It adds blind
+packets, explicit original annotation provenance, competence/calibration and
+independence checks, fixed relation universes and frozen-cohort scoring. The
+workbench-confirmation/export workflow below remains the legacy review workflow;
+model-assisted confirmations do not become blind gold automatically.
+
 How to produce the human-reviewed gold set that the evaluation is scored
 against. The original PDF is always authoritative; you are recording what a
 human verified against it, not what the model guessed.

@@ -16,9 +16,11 @@ from pypdf.errors import PdfReadError
 
 from .client import Settings, complete
 from .pdf import read_pdf
+from .pdf_evidence import passage_regions
 from .pipeline import messages_for, verify_response
 from .review import ReviewAction, ReviewError, ReviewStore
 from .schema import CandidateExtraction, Document, ExtractionResult
+from .explorer import Explorer
 
 ROOT = Path(__file__).resolve().parents[2]
 STATIC = ROOT / "web"
@@ -35,6 +37,7 @@ class Workbench:
         self.store = ReviewStore(directory)
         self.token = secrets.token_urlsafe(32)
         self.render_lock = threading.Lock()
+        self.pdf_evidence_lock = threading.Lock()
         self.model_lock = threading.Lock()
         self.v2_lock = threading.Lock()
         self._v2 = None
@@ -99,6 +102,34 @@ class Workbench:
             raise ReviewError("Page not found", 404)
         return self.render_image(self.store.pdf_path(identifier), identifier, page)
 
+    def evidence(self, identifier: str, field: str):
+        item = self.store.get(identifier)
+        if field not in item["fields"]:
+            raise ReviewError("Unknown extraction field", 404)
+        value = item["fields"][field]
+        effective = value["review"] or value["suggestion"]
+        provenance = effective.get("provenance")
+        result = {"revision": item["revision"], "field": field,
+                  "page": provenance.get("page") if provenance else None,
+                  "status": "unavailable", "regions": [],
+                  "reason": "No supporting passage is recorded for this field."}
+        if not provenance:
+            return result
+        if provenance.get("basis") == "image":
+            result["reason"] = "Human image transcription; no region coordinates were recorded."
+            return result
+        source = next((p for p in item["document"]["pages"] if p["number"] == provenance["page"]), None)
+        start, end = provenance.get("start"), provenance.get("end")
+        if (source is None or not isinstance(start, int) or not isinstance(end, int)
+                or not 0 <= start < end <= len(source["text"])
+                or source["text"][start:end] != provenance["quote"]):
+            result["reason"] = "The saved passage no longer matches the source text."
+            return result
+        # PDF geometry is serialized because the native PDF library is not thread safe.
+        with self.pdf_evidence_lock:
+            result.update(passage_regions(self.store.pdf_path(identifier), provenance["page"], provenance["quote"]))
+        return result
+
     def image_v2(self, digest: str, page: int):
         api = self.versioned_api()
         artifact = api.artifact(digest)
@@ -112,12 +143,13 @@ class Workbench:
             raise ReviewError("Page images are unavailable. Open the original PDF or use source text.", 503)
         directory = self.store.directory / "rendered" / identifier
         directory.mkdir(parents=True, exist_ok=True)
-        prefix = directory / f"page-{page}"
+        # Separate cache from older previews rendered against the media box.
+        prefix = directory / f"page-{page}-crop-v1"
         target = prefix.with_suffix(".png")
         with self.render_lock:
             if not target.is_file():
                 try:
-                    subprocess.run([executable, "-f", str(page), "-l", str(page), "-singlefile", "-scale-to", "1600",
+                    subprocess.run([executable, "-f", str(page), "-l", str(page), "-singlefile", "-cropbox", "-scale-to", "1600",
                                     "-png", str(source), str(prefix)],
                                    capture_output=True, check=True, timeout=35)
                 except (subprocess.SubprocessError, OSError):
@@ -207,9 +239,14 @@ def make_handler(app: Workbench):
                 path = urlsplit(self.path).path
                 static = {"/": ("index.html", "text/html; charset=utf-8"), "/app.js": ("app.js", "text/javascript; charset=utf-8"),
                           "/style.css": ("style.css", "text/css; charset=utf-8"),
+                          "/workspace.css": ("workspace.css", "text/css; charset=utf-8"),
+                          "/profile.js": ("profile.js", "text/javascript; charset=utf-8"),
                           "/scoped": ("scoped.html", "text/html; charset=utf-8"),
                           "/scoped.js": ("scoped.js", "text/javascript; charset=utf-8"),
-                          "/scoped.css": ("scoped.css", "text/css; charset=utf-8")}
+                          "/scoped.css": ("scoped.css", "text/css; charset=utf-8"),
+                          "/explore": ("explore.html", "text/html; charset=utf-8"),
+                          "/explore.js": ("explore.js", "text/javascript; charset=utf-8"),
+                          "/explore.css": ("explore.css", "text/css; charset=utf-8")}
                 if path in static:
                     filename, mime = static[path]
                     return self.send_bytes((STATIC / filename).read_bytes(), mime)
@@ -218,6 +255,28 @@ def make_handler(app: Workbench):
                 if path == "/api/state":
                     return self.json(app.state())
                 parts = [unquote(part) for part in path.strip("/").split("/")]
+                if parts[:2] == ["api", "explorer"]:
+                    query = parse_qs(urlsplit(self.path).query, keep_blank_values=True)
+                    if any(len(v) != 1 for v in query.values()):
+                        raise ReviewError("Explorer filters must have a single value")
+                    params = {k: v[0] for k, v in query.items()}
+                    explorer = Explorer(app.store)
+                    if len(parts) == 2:
+                        return self.json(explorer.search(params))
+                    if parts[2:] == ["export"]:
+                        format = params.get("format", "json")
+                        if format not in {"json", "csv"}:
+                            raise ReviewError("Choose JSON or CSV for a research brief")
+                        brief = explorer.brief(params)
+                        if format == "csv":
+                            return self.send_bytes(explorer.csv(brief), "text/csv; charset=utf-8", attachment="skony-research.csv")
+                        return self.json(brief, attachment="skony-research.json")
+                    if len(parts) == 4 and parts[2] == "dossiers":
+                        if set(params) - {"reviewed_only"}:
+                            raise ReviewError("Unknown dossier filter")
+                        filters = explorer.filters(params)
+                        return self.json(explorer.detail(parts[3], reviewed_only=filters["reviewed_only"]))
+                    raise ReviewError("Explorer resource not found", 404)
                 if parts[:2] == ["api", "v2"]:
                     if len(parts) == 5 and parts[2] == "artifacts" and parts[4] == "pdf":
                         return self.send_bytes(app.versioned_api().artifact_path(parts[3]).read_bytes(), "application/pdf")
@@ -234,6 +293,8 @@ def make_handler(app: Workbench):
                         return self.json(app.store.audit(identifier))
                     if parts[3:] == ["export"]:
                         return self.json(app.store.export(identifier), attachment="skony-reviewed.json")
+                    if len(parts) == 6 and parts[3] == "fields" and parts[5] == "evidence":
+                        return self.json(app.evidence(identifier, parts[4]))
                     if len(parts) == 5 and parts[3] == "pages" and parts[4].endswith(".png"):
                         return self.send_bytes(app.image(identifier, int(parts[4][:-4])), "image/png")
                 raise ReviewError("Not found", 404)

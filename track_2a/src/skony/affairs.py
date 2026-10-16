@@ -187,6 +187,9 @@ class AffairStore:
                 if not any(i["value"] == claim.value and i["evidence"] ==
                            [e.model_dump() for e in claim.evidence] for i in items):
                     raise ReviewError("Claim does not match its recorded extraction origin", 422)
+                if (claim.chunk_manifest is None or claim.chunk_manifest.model_dump() != origin["manifest"]
+                        or [o.model_dump() for o in claim.chunk_outcomes] != [origin["outcome"]]):
+                    raise ReviewError("Claim must preserve its recorded extraction coverage and outcome", 422)
             if claim.relation is not None:
                 raise ReviewError("Use imported typed structural proposals for relations", 422)
             if claim.predicate not in FIELDS:
@@ -309,10 +312,18 @@ class AffairStore:
                     completeness = assess_completeness(claim.chunk_manifest, claim.chunk_outcomes,
                         scope_identity=dependencies["reviewed_scope_identity"], assertion_identity=request.claim_id,
                         unsatisfied_continuation=claim.unsatisfied_continuation, check=check)
-                elif check:
-                    completeness = {"semantic_completeness": "incomplete" if not check.complete else
-                        "complete_in_reviewed_scope" if check.boundary_checked and check.required_clauses_checked else "unknown",
-                        "section_check": check.model_dump(), "input_coverage": "unknown", "generation_completion": "unknown"}
+                else:
+                    reasons = []
+                    if claim.unsatisfied_continuation:
+                        reasons.append("unsatisfied_continuation")
+                    if check and not check.complete:
+                        reasons.append("human_incomplete_section")
+                    semantic = "incomplete" if reasons else "unknown"
+                    if not reasons and check and check.complete and check.boundary_checked and check.required_clauses_checked:
+                        semantic = "complete_in_reviewed_scope"
+                    completeness = {"semantic_completeness": semantic, "reasons": reasons,
+                        "section_check": check.model_dump() if check else None,
+                        "input_coverage": "unknown", "generation_completion": "unknown"}
             decision = {"schema_version": "skony.decision.v0.2", "request": request.model_dump(),
                         "dependencies": dependencies, "completeness": completeness, "created_at": timestamp()}
             oid = put_object(db, "review", decision)

@@ -48,29 +48,17 @@ PAGE_WIDTH, PAGE_HEIGHT = A4
 MARGIN_X, MARGIN_TOP, MARGIN_BOTTOM = 16 * mm, 15 * mm, 15 * mm
 
 
-ZWSP = "\u200b"  # zero-width space: lets long paths wrap without visible change
-
-
-def _break_separators(fragment: str) -> str:
-    for sep in ("/", "_", "-", "."):
-        fragment = fragment.replace(sep, sep + ZWSP)
-    return fragment.replace(" " + ZWSP, " ")
-
-
 def inline(text: str) -> str:
     """Markdown inline subset -> reportlab paragraph XML."""
+    # Helvetica has no zero-width-space glyph: break hints rendered as squares.
+    # ReportLab can wrap long words directly; remove Markdown links before XML.
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1", text)
+    text = text.replace("\u200b", "").replace("\u2011", "-")
     text = html.escape(text)
     text = re.sub(r"``(.+?)``", r'<font face="Courier">\1</font>', text)
     text = re.sub(r"`(.+?)`", r'<font face="Courier">\1</font>', text)
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
-    # Break hints inside text only, never inside tags.
-    return re.sub(r"(^|>)([^<]+)", lambda m: m.group(1) + _break_separators(m.group(2)), text)
-
-    def link(match: re.Match) -> str:
-        label, url = match.group(1), match.group(2)
-        return f"{label} ({url})" if url.startswith(("http://", "https://")) else label
-
-    return re.sub(r"\[([^\]]+)\]\(([^)]+)\)", link, text)
+    return text
 
 
 def table_block(rows: list[list[str]]) -> Table:

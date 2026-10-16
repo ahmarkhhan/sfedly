@@ -1,0 +1,43 @@
+name: Offline engineering checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check public files and credential patterns
+        run: python track_2a/scripts/check_publication.py
+      - name: Install runtime and preview dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          python -m pip install -r track_2a/requirements.txt
+      - name: Python engineering tests
+        working-directory: track_2a
+        env:
+          PYTHONPATH: src
+          LLM_API_KEY: ''
+        run: python -m unittest discover -s tests
+      - name: Interface controllers
+        working-directory: track_2a
+        run: node --test tests/evidence-ui.test.cjs tests/explorer-ui.test.cjs tests/scoped-ui.test.cjs
+      - name: Clean public-source startup
+        working-directory: track_2a
+        run: python scripts/check_clean_start.py

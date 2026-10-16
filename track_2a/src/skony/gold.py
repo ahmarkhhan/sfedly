@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from itertools import combinations
 from pathlib import Path
 from typing import Literal
 
@@ -140,6 +141,42 @@ def _ratio(n, d):
     return n / d if d else None
 
 
+def annotation_agreement(units):
+    """Original reviewer-pair agreement, with source-cluster counts and undefined kappa preserved."""
+    pairs = {}
+    for unit in units:
+        if unit.synthetic:
+            continue
+        for label in unit.fields.values():
+            annotations = sorted((a for a in label.annotations if a.kind == "human" and a.mode == "blind" and a.independent),
+                                 key=lambda a: a.annotator_id)
+            for a, b in combinations(annotations, 2):
+                key = (a.annotator_id, b.annotator_id)
+                p = pairs.setdefault(key, {"confusion": Counter(), "exact_values_agree": 0, "both_present": 0, "groups": set()})
+                p["confusion"][(a.assessment, b.assessment)] += 1
+                p["groups"].add(unit.split_group)
+                if a.assessment == b.assessment == "present":
+                    p["both_present"] += 1
+                    p["exact_values_agree"] += {" ".join(v.split()) for v in a.acceptable_values} == {
+                        " ".join(v.split()) for v in b.acceptable_values}
+    result = []
+    for reviewers, p in sorted(pairs.items()):
+        confusion = p["confusion"]
+        n = sum(confusion.values())
+        left, right = Counter(), Counter()
+        for (a, b), count in confusion.items():
+            left[a] += count
+            right[b] += count
+        observed = _ratio(sum(count for (a, b), count in confusion.items() if a == b), n)
+        chance = sum(left[k] * right[k] for k in set(left) | set(right)) / n ** 2
+        kappa = (observed - chance) / (1 - chance) if chance < 1 and len(set(left) | set(right)) > 1 else None
+        result.append({"reviewers": list(reviewers), "field_slots": n, "source_components": len(p["groups"]),
+            "raw_disposition_agreement": observed, "cohen_kappa": kappa,
+            "both_present": p["both_present"], "exact_value_set_agreement": _ratio(p["exact_values_agree"], p["both_present"]),
+            "confusion": [{"left": a, "right": b, "count": c} for (a, b), c in sorted(confusion.items())]})
+    return {"reviewer_pairs": result, "field_slots_are_not_independent_documents": True}
+
+
 def _score_subset(units, predictions, *, sensitivity, total_units):
     counts = {name: {"tp": 0, "fp": 0, "fn": 0, "scorable": 0,
                      "known_absent": 0, "correct_absence": 0, "failed_absent": 0} for name in FIELDS}
@@ -179,7 +216,13 @@ def _score_subset(units, predictions, *, sensitivity, total_units):
                 "f1": _ratio(2 * c["tp"], 2 * c["tp"] + c["fp"] + c["fn"]),
                 "correct_absence_rate": _ratio(c["correct_absence"], c["known_absent"])}
 
-    return {"micro": metrics(micro), "per_field": {k: metrics(v) for k, v in counts.items()},
+    per_field = {k: metrics(v) for k, v in counts.items()}
+    macro = {}
+    for metric in ("precision", "recall", "f1"):
+        defined = [m[metric] for m in per_field.values() if m[metric] is not None]
+        macro[metric] = _ratio(sum(defined), len(defined))
+        macro[metric + "_defined_fields"] = len(defined)
+    return {"micro": metrics(micro), "per_field": per_field, "macro": macro,
             "label_status_counts": {s: statuses[s] for s in STATUSES},
             "scored_status_counts": {s: eligible_statuses[s] for s in STATUSES},
             "excluded_by_reason": dict(sorted(excluded.items())),
@@ -207,6 +250,7 @@ def score(units: list[GoldUnit], predictions: list[Prediction], *, frozen_unit_i
             "units_with_gold": len(units), "units_without_gold": len(frozen_unit_ids) - len(units),
             "operational_outcomes": dict(sorted(outcomes.items())),
             "full_cohort_success": _ratio(outcomes["completed"], len(frozen_unit_ids)),
+            "annotation_agreement": annotation_agreement(units),
             "primary": _score_subset(units, by_id, sensitivity=False, total_units=len(frozen_unit_ids)),
             "independently_checked_sensitivity": _score_subset(units, by_id, sensitivity=True, total_units=len(frozen_unit_ids))}
 

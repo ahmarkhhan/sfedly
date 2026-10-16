@@ -3,17 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Skony · Review workbench</title>
+  <title>Skony · Review documents</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/workspace.css">
   <script src="/app.js" defer></script>
+  <script src="/profile.js" defer></script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
   <div class="app-shell">
-    <aside class="sidebar">
+    <aside class="sidebar workspace-sidebar">
       <a class="brand" href="/" aria-label="Skony home"><span class="brand-mark" aria-hidden="true">+</span>skony<span class="brand-dot">.</span></a>
       <p class="brand-caption">Parliamentary data<br>with proof.</p>
-      <a class="text-link" href="/scoped">Scoped review &amp; comparisons ↗</a>
-      <div class="sidebar-heading"><span>DOCUMENTS</span><span id="document-count">0</span></div>
+      <nav class="workspace-nav" aria-label="Workspace">
+        <a href="/explore"><span class="nav-icon" aria-hidden="true">⌕</span><span><strong>Explore affairs</strong><small>Search, read and find sources</small></span></a>
+        <a href="/" aria-current="page"><span class="nav-icon" aria-hidden="true">▤</span><span><strong>Review documents</strong><small>Add PDFs and check extracted fields</small></span></a>
+        <a href="/scoped"><span class="nav-icon" aria-hidden="true">⇄</span><span><strong>Compare evidence</strong><small>Review scopes and compare snapshots</small></span></a>
+      </nav>
+      <div class="sidebar-heading queue-heading"><span>YOUR DOCUMENTS</span><span id="document-count">0</span></div>
       <button class="upload-button" id="upload-button"><span aria-hidden="true">＋</span> Add a PDF</button>
       <input id="upload-input" type="file" accept="application/pdf,.pdf" hidden>
       <nav id="document-list" class="document-list" aria-label="Document queue"></nav>
@@ -24,8 +31,9 @@
         <div class="local-indicator"><span class="status-dot"></span> Local workbench</div>
       </div>
     </aside>
-    <main>
-      <header class="topbar"><span class="breadcrumb">Workspace <span>/</span> Document review</span><div id="model-status" class="model-status">Checking Apertus…</div></header>
+    <main id="main-content" tabindex="-1">
+      <header class="topbar workspace-topbar"><span class="breadcrumb">Workspace <span>/</span> <strong>Review documents</strong></span><div id="model-status" class="model-status">Checking Apertus…</div></header>
+      <div class="workspace-context"><strong>Review documents</strong><p>Add a PDF, extract its fields, then check each value against the original page.</p></div>
       <div id="empty-state" class="empty-state" hidden><span class="eyebrow">START WITH THE SOURCE</span><h1>Turn a parliamentary PDF<br>into data you can check.</h1><p>Add a document, extract with Apertus, and review each field beside its original page.</p><button id="empty-upload" class="button primary">Add your first PDF</button></div>
       <section id="workspace" hidden>
         <div class="document-header">
@@ -40,12 +48,13 @@
           <section class="source-panel" aria-label="Original document">
             <div class="panel-heading"><div><span class="panel-dot"></span><h2>Source document</h2></div><a id="original-link" class="text-link" target="_blank" rel="noopener">Open PDF ↗</a></div>
             <div class="source-toolbar"><div class="segmented" role="group" aria-label="Source view"><button id="image-tab" class="selected" aria-pressed="true">Original page</button><button id="text-tab" aria-pressed="false">Extracted text</button></div><div class="page-controls"><button id="previous-page" aria-label="Previous page">‹</button><span id="page-number"></span><button id="next-page" aria-label="Next page">›</button></div></div>
-            <div id="source-stage" class="source-stage"><div id="image-view" class="image-view"><p id="image-message" class="image-message">Loading original page…</p><img id="page-image" alt="Original parliamentary document page"></div><div id="text-view" class="text-view" hidden><div id="evidence-caption" class="evidence-caption"></div><pre id="page-text"></pre></div></div>
+            <div id="source-evidence" class="source-evidence" role="status" aria-live="polite" hidden><div class="source-evidence-heading"><strong id="source-evidence-title"></strong><button id="clear-evidence" class="text-button" aria-label="Clear selected evidence">Clear ×</button></div><p id="source-evidence-status"></p><blockquote id="source-evidence-quote"></blockquote></div>
+            <div id="source-stage" class="source-stage"><div id="image-view" class="image-view"><p id="image-message" class="image-message">Loading original page…</p><div class="page-canvas"><img id="page-image" alt="Original parliamentary document page"><div id="page-highlights" class="page-highlights" aria-hidden="true"></div></div></div><div id="text-view" class="text-view" hidden><div id="evidence-caption" class="evidence-caption"></div><pre id="page-text"></pre></div></div>
             <div class="source-footer"><span id="source-footer-caption">The original page is the reference for review.</span><button id="zoom-button" class="text-button">Zoom in ＋</button></div>
           </section>
           <section class="fields-panel" aria-label="Extracted fields">
             <div class="panel-heading"><div><span class="panel-dot amber"></span><h2>Extracted fields</h2></div><span class="panel-subtitle">Human review required</span></div>
-            <div class="fields-intro"><span class="small-spark" aria-hidden="true">✦</span><p>Source passages support each suggestion. Check its meaning and the original page before confirming.</p></div>
+            <div class="fields-intro"><span class="small-spark" aria-hidden="true">✦</span><p>Hover or focus a value to highlight its supporting lines on the PDF. Click to keep it selected. Check the meaning before confirming.</p></div>
             <div id="field-list" class="field-list"></div>
           </section>
         </div>

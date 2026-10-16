@@ -1,0 +1,4134 @@
+{
+  "cohort": {
+    "$defs": {
+      "IntakeReview": {
+        "additionalProperties": false,
+        "properties": {
+          "reviewer_id": {
+            "minLength": 1,
+            "title": "Reviewer Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "locked_at": {
+            "title": "Locked At",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "body_id": {
+            "title": "Body Id",
+            "type": "string"
+          },
+          "affair_id": {
+            "title": "Affair Id",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "submission",
+              "executive_response",
+              "decision_record",
+              "minutes",
+              "annex",
+              "combined",
+              "unknown"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "jurisdiction_level": {
+            "default": "unknown",
+            "enum": [
+              "municipal",
+              "cantonal",
+              "federal",
+              "unknown"
+            ],
+            "title": "Jurisdiction Level",
+            "type": "string"
+          },
+          "checked_pages": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Checked Pages",
+            "type": "array"
+          },
+          "note": {
+            "minLength": 1,
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reviewer_id",
+          "kind",
+          "locked_at",
+          "artifact_id",
+          "body_id",
+          "affair_id",
+          "language",
+          "role",
+          "checked_pages",
+          "note"
+        ],
+        "title": "IntakeReview",
+        "type": "object"
+      },
+      "SplitLink": {
+        "additionalProperties": false,
+        "properties": {
+          "left": {
+            "title": "Left",
+            "type": "string"
+          },
+          "right": {
+            "title": "Right",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "translation",
+              "confirmed_duplicate"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "reviewer": {
+            "minLength": 1,
+            "title": "Reviewer",
+            "type": "string"
+          },
+          "reference": {
+            "minLength": 1,
+            "title": "Reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "left",
+          "right",
+          "kind",
+          "reviewer",
+          "reference"
+        ],
+        "title": "SplitLink",
+        "type": "object"
+      },
+      "StudyPolicy": {
+        "additionalProperties": false,
+        "properties": {
+          "mode": {
+            "default": "small",
+            "enum": [
+              "large",
+              "small",
+              "bounded"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "minimum_documents": {
+            "default": 12,
+            "minimum": 1,
+            "title": "Minimum Documents",
+            "type": "integer"
+          },
+          "maximum_documents": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 16,
+            "title": "Maximum Documents"
+          },
+          "minimum_affairs": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Minimum Affairs",
+            "type": "integer"
+          },
+          "minimum_bodies": {
+            "default": 3,
+            "minimum": 1,
+            "title": "Minimum Bodies",
+            "type": "integer"
+          },
+          "minimum_levels": {
+            "default": 2,
+            "minimum": 1,
+            "title": "Minimum Levels",
+            "type": "integer"
+          },
+          "minimum_pairs": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Minimum Pairs",
+            "type": "integer"
+          },
+          "required_languages": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Required Languages",
+            "type": "array"
+          },
+          "claims": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Claims",
+            "type": "array"
+          }
+        },
+        "title": "StudyPolicy",
+        "type": "object"
+      },
+      "StudyUnit": {
+        "additionalProperties": false,
+        "properties": {
+          "unit_id": {
+            "title": "Unit Id",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "artifact_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artifact Id"
+          },
+          "scope_id": {
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "provider": {
+            "default": "openparldata",
+            "title": "Provider",
+            "type": "string"
+          },
+          "body_id": {
+            "title": "Body Id",
+            "type": "string"
+          },
+          "body_key": {
+            "title": "Body Key",
+            "type": "string"
+          },
+          "level": {
+            "default": "unknown",
+            "enum": [
+              "municipal",
+              "cantonal",
+              "federal",
+              "unknown"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "affair_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affair Id"
+          },
+          "language_hint": {
+            "default": "unknown",
+            "title": "Language Hint",
+            "type": "string"
+          },
+          "role_hint": {
+            "default": "unknown",
+            "title": "Role Hint",
+            "type": "string"
+          },
+          "source_status": {
+            "enum": [
+              "ready",
+              "failed"
+            ],
+            "title": "Source Status",
+            "type": "string"
+          },
+          "failure_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Failure Reason"
+          },
+          "available_pages": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Available Pages",
+            "type": "array"
+          },
+          "hard_case": {
+            "default": false,
+            "title": "Hard Case",
+            "type": "boolean"
+          },
+          "split": {
+            "default": "unassigned",
+            "enum": [
+              "unassigned",
+              "development",
+              "test"
+            ],
+            "title": "Split",
+            "type": "string"
+          },
+          "review": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/IntakeReview"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "unit_id",
+          "source_id",
+          "artifact_id",
+          "scope_id",
+          "body_id",
+          "body_key",
+          "affair_id",
+          "source_status",
+          "available_pages"
+        ],
+        "title": "StudyUnit",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "units": {
+        "items": {
+          "$ref": "#/$defs/StudyUnit"
+        },
+        "title": "Units",
+        "type": "array"
+      },
+      "policy": {
+        "$ref": "#/$defs/StudyPolicy"
+      },
+      "links": {
+        "items": {
+          "$ref": "#/$defs/SplitLink"
+        },
+        "title": "Links",
+        "type": "array"
+      },
+      "frozen_at": {
+        "title": "Frozen At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "units",
+      "policy",
+      "frozen_at"
+    ],
+    "title": "CohortInput",
+    "type": "object"
+  },
+  "relation-universe": {
+    "$defs": {
+      "EvidenceSegment": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "text_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Snapshot Id"
+          },
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Layer Id"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End"
+          },
+          "quote": {
+            "minLength": 1,
+            "title": "Quote",
+            "type": "string"
+          },
+          "basis": {
+            "default": "text",
+            "enum": [
+              "text",
+              "image"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "match_method": {
+            "anyOf": [
+              {
+                "enum": [
+                  "exact",
+                  "whitespace_normalized"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Match Method"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/PDFRegion"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "text_snapshot_id",
+          "page",
+          "layer_id",
+          "quote"
+        ],
+        "title": "EvidenceSegment",
+        "type": "object"
+      },
+      "LayerPage": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "minLength": 1,
+            "title": "Layer Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "page",
+          "layer_id",
+          "text"
+        ],
+        "title": "LayerPage",
+        "type": "object"
+      },
+      "PDFRegion": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "minimum": 0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "minimum": 0,
+            "title": "Y",
+            "type": "number"
+          },
+          "width": {
+            "exclusiveMinimum": 0,
+            "title": "Width",
+            "type": "number"
+          },
+          "height": {
+            "exclusiveMinimum": 0,
+            "title": "Height",
+            "type": "number"
+          },
+          "render_width": {
+            "exclusiveMinimum": 0,
+            "title": "Render Width",
+            "type": "integer"
+          },
+          "render_height": {
+            "exclusiveMinimum": 0,
+            "title": "Render Height",
+            "type": "integer"
+          },
+          "transform": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 6,
+            "minItems": 6,
+            "title": "Transform",
+            "type": "array"
+          },
+          "render_identity": {
+            "minLength": 1,
+            "title": "Render Identity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height",
+          "render_width",
+          "render_height",
+          "transform",
+          "render_identity"
+        ],
+        "title": "PDFRegion",
+        "type": "object"
+      },
+      "RelationNode": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "affair",
+              "affair_document",
+              "question",
+              "response",
+              "decision"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "body_id": {
+            "minLength": 1,
+            "title": "Body Id",
+            "type": "string"
+          },
+          "affair_key": {
+            "minLength": 1,
+            "title": "Affair Key",
+            "type": "string"
+          },
+          "unit_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Unit Id"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/$defs/EvidenceSegment"
+            },
+            "title": "Evidence",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "body_id",
+          "affair_key"
+        ],
+        "title": "RelationNode",
+        "type": "object"
+      },
+      "TextSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "skony.text.v0.2",
+            "default": "skony.text.v0.2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "parser_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parser Name"
+          },
+          "parser_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parser Version"
+          },
+          "configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Configuration"
+          },
+          "origin": {
+            "enum": [
+              "recorded",
+              "legacy_unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/$defs/LayerPage"
+            },
+            "minItems": 1,
+            "title": "Pages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "origin",
+          "pages"
+        ],
+        "title": "TextSnapshot",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "nodes": {
+        "items": {
+          "$ref": "#/$defs/RelationNode"
+        },
+        "title": "Nodes",
+        "type": "array"
+      },
+      "texts": {
+        "items": {
+          "$ref": "#/$defs/TextSnapshot"
+        },
+        "title": "Texts",
+        "type": "array"
+      },
+      "kinds": {
+        "items": {
+          "enum": [
+            "affair_document",
+            "question_response",
+            "response_decision"
+          ],
+          "type": "string"
+        },
+        "title": "Kinds",
+        "type": "array"
+      },
+      "frozen_at": {
+        "title": "Frozen At",
+        "type": "string"
+      },
+      "inventory_note": {
+        "title": "Inventory Note",
+        "type": "string"
+      },
+      "cohort": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Cohort"
+      }
+    },
+    "required": [
+      "nodes",
+      "texts",
+      "kinds",
+      "frozen_at",
+      "inventory_note"
+    ],
+    "title": "RelationUniverseInput",
+    "type": "object"
+  },
+  "relation-score": {
+    "$defs": {
+      "Adjudication": {
+        "additionalProperties": false,
+        "properties": {
+          "adjudicator_id": {
+            "minLength": 1,
+            "title": "Adjudicator Id",
+            "type": "string"
+          },
+          "note": {
+            "minLength": 1,
+            "title": "Note",
+            "type": "string"
+          },
+          "locked_at": {
+            "minLength": 1,
+            "title": "Locked At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "adjudicator_id",
+          "note",
+          "locked_at"
+        ],
+        "title": "Adjudication",
+        "type": "object"
+      },
+      "EvidenceSegment": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "text_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Snapshot Id"
+          },
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Layer Id"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End"
+          },
+          "quote": {
+            "minLength": 1,
+            "title": "Quote",
+            "type": "string"
+          },
+          "basis": {
+            "default": "text",
+            "enum": [
+              "text",
+              "image"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "match_method": {
+            "anyOf": [
+              {
+                "enum": [
+                  "exact",
+                  "whitespace_normalized"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Match Method"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/PDFRegion"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "text_snapshot_id",
+          "page",
+          "layer_id",
+          "quote"
+        ],
+        "title": "EvidenceSegment",
+        "type": "object"
+      },
+      "PDFRegion": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "minimum": 0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "minimum": 0,
+            "title": "Y",
+            "type": "number"
+          },
+          "width": {
+            "exclusiveMinimum": 0,
+            "title": "Width",
+            "type": "number"
+          },
+          "height": {
+            "exclusiveMinimum": 0,
+            "title": "Height",
+            "type": "number"
+          },
+          "render_width": {
+            "exclusiveMinimum": 0,
+            "title": "Render Width",
+            "type": "integer"
+          },
+          "render_height": {
+            "exclusiveMinimum": 0,
+            "title": "Render Height",
+            "type": "integer"
+          },
+          "transform": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 6,
+            "minItems": 6,
+            "title": "Transform",
+            "type": "array"
+          },
+          "render_identity": {
+            "minLength": 1,
+            "title": "Render Identity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height",
+          "render_width",
+          "render_height",
+          "transform",
+          "render_identity"
+        ],
+        "title": "PDFRegion",
+        "type": "object"
+      },
+      "RelationAnnotation": {
+        "additionalProperties": false,
+        "properties": {
+          "annotator_id": {
+            "minLength": 1,
+            "title": "Annotator Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "blind",
+              "assisted"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "independent": {
+            "title": "Independent",
+            "type": "boolean"
+          },
+          "language_competence": {
+            "minLength": 1,
+            "title": "Language Competence",
+            "type": "string"
+          },
+          "procedural_competence": {
+            "minLength": 1,
+            "title": "Procedural Competence",
+            "type": "string"
+          },
+          "locked_at": {
+            "title": "Locked At",
+            "type": "string"
+          },
+          "label": {
+            "enum": [
+              "positive",
+              "negative",
+              "unknown"
+            ],
+            "title": "Label",
+            "type": "string"
+          },
+          "checked_node_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "title": "Checked Node Ids",
+            "type": "array"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/$defs/EvidenceSegment"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "rationale": {
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          }
+        },
+        "required": [
+          "annotator_id",
+          "kind",
+          "mode",
+          "independent",
+          "language_competence",
+          "procedural_competence",
+          "locked_at",
+          "label",
+          "checked_node_ids",
+          "evidence",
+          "rationale"
+        ],
+        "title": "RelationAnnotation",
+        "type": "object"
+      },
+      "RelationGold": {
+        "additionalProperties": false,
+        "properties": {
+          "universe_digest": {
+            "title": "Universe Digest",
+            "type": "string"
+          },
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "label": {
+            "enum": [
+              "positive",
+              "negative",
+              "unknown"
+            ],
+            "title": "Label",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "single_annotator_final",
+              "independently_agreed",
+              "adjudicated",
+              "unresolved"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/$defs/RelationAnnotation"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "adjudication": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Adjudication"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "universe_digest",
+          "candidate_id",
+          "label",
+          "status",
+          "annotations"
+        ],
+        "title": "RelationGold",
+        "type": "object"
+      },
+      "RelationPrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "label": {
+            "enum": [
+              "positive",
+              "negative",
+              "unknown"
+            ],
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "label"
+        ],
+        "title": "RelationPrediction",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "universe": {
+        "additionalProperties": true,
+        "title": "Universe",
+        "type": "object"
+      },
+      "labels": {
+        "items": {
+          "$ref": "#/$defs/RelationGold"
+        },
+        "title": "Labels",
+        "type": "array"
+      },
+      "predictions": {
+        "items": {
+          "$ref": "#/$defs/RelationPrediction"
+        },
+        "title": "Predictions",
+        "type": "array"
+      }
+    },
+    "required": [
+      "universe",
+      "labels",
+      "predictions"
+    ],
+    "title": "RelationScoreInput",
+    "type": "object"
+  },
+  "relation-merge": {
+    "additionalProperties": false,
+    "properties": {
+      "universe": {
+        "additionalProperties": true,
+        "title": "Universe",
+        "type": "object"
+      },
+      "packets": {
+        "items": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "title": "Packets",
+        "type": "array"
+      },
+      "adjudications": {
+        "additionalProperties": true,
+        "title": "Adjudications",
+        "type": "object"
+      }
+    },
+    "required": [
+      "universe",
+      "packets"
+    ],
+    "title": "RelationMergeInput",
+    "type": "object"
+  },
+  "review-protocol": {
+    "$defs": {
+      "Calibration": {
+        "additionalProperties": false,
+        "properties": {
+          "development_unit_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Development Unit Ids",
+            "type": "array"
+          },
+          "guide_digest": {
+            "minLength": 1,
+            "title": "Guide Digest",
+            "type": "string"
+          },
+          "completed_at": {
+            "title": "Completed At",
+            "type": "string"
+          },
+          "resolution_note": {
+            "minLength": 1,
+            "title": "Resolution Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "development_unit_ids",
+          "guide_digest",
+          "completed_at",
+          "resolution_note"
+        ],
+        "title": "Calibration",
+        "type": "object"
+      },
+      "Prediction": {
+        "additionalProperties": false,
+        "properties": {
+          "unit_id": {
+            "title": "Unit Id",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "completed",
+              "failed",
+              "unsupported",
+              "not_run"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "fields": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "unit_id",
+          "outcome",
+          "fields"
+        ],
+        "title": "Prediction",
+        "type": "object"
+      },
+      "ReviewSession": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "reviewer_id": {
+            "title": "Reviewer Id",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "blind",
+              "assisted"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "unit_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Unit Ids",
+            "type": "array"
+          },
+          "capabilities": {
+            "items": {
+              "enum": [
+                "fields",
+                "roles",
+                "relations"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "independent": {
+            "title": "Independent",
+            "type": "boolean"
+          },
+          "exposure_disclosed": {
+            "title": "Exposure Disclosed",
+            "type": "boolean"
+          },
+          "exposed_gold_unit_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Exposed Gold Unit Ids",
+            "type": "array"
+          },
+          "saw_model_output": {
+            "title": "Saw Model Output",
+            "type": "boolean"
+          },
+          "started_at": {
+            "title": "Started At",
+            "type": "string"
+          },
+          "finished_at": {
+            "title": "Finished At",
+            "type": "string"
+          },
+          "active_seconds": {
+            "minimum": 0,
+            "title": "Active Seconds",
+            "type": "number"
+          },
+          "actions": {
+            "minimum": 0,
+            "title": "Actions",
+            "type": "integer"
+          },
+          "corrections": {
+            "minimum": 0,
+            "title": "Corrections",
+            "type": "integer"
+          },
+          "reversals": {
+            "minimum": 0,
+            "title": "Reversals",
+            "type": "integer"
+          },
+          "unresolved_fields": {
+            "minimum": 0,
+            "title": "Unresolved Fields",
+            "type": "integer"
+          },
+          "predictions": {
+            "items": {
+              "$ref": "#/$defs/Prediction"
+            },
+            "title": "Predictions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "reviewer_id",
+          "mode",
+          "unit_ids",
+          "capabilities",
+          "independent",
+          "exposure_disclosed",
+          "exposed_gold_unit_ids",
+          "saw_model_output",
+          "started_at",
+          "finished_at",
+          "active_seconds",
+          "actions",
+          "corrections",
+          "reversals",
+          "unresolved_fields"
+        ],
+        "title": "ReviewSession",
+        "type": "object"
+      },
+      "Reviewer": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Languages",
+            "type": "array"
+          },
+          "body_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Body Ids",
+            "type": "array"
+          },
+          "procedural_competence": {
+            "minLength": 1,
+            "title": "Procedural Competence",
+            "type": "string"
+          },
+          "calibration": {
+            "items": {
+              "$ref": "#/$defs/Calibration"
+            },
+            "title": "Calibration",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "languages",
+          "body_ids",
+          "procedural_competence",
+          "calibration"
+        ],
+        "title": "Reviewer",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "cohort": {
+        "additionalProperties": true,
+        "title": "Cohort",
+        "type": "object"
+      },
+      "reviewers": {
+        "items": {
+          "$ref": "#/$defs/Reviewer"
+        },
+        "title": "Reviewers",
+        "type": "array"
+      },
+      "sessions": {
+        "items": {
+          "$ref": "#/$defs/ReviewSession"
+        },
+        "title": "Sessions",
+        "type": "array"
+      },
+      "claimed_relations": {
+        "default": false,
+        "title": "Claimed Relations",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "cohort",
+      "reviewers",
+      "sessions"
+    ],
+    "title": "ProtocolInput",
+    "type": "object"
+  },
+  "review-uplift": {
+    "$defs": {
+      "Adjudication": {
+        "additionalProperties": false,
+        "properties": {
+          "adjudicator_id": {
+            "minLength": 1,
+            "title": "Adjudicator Id",
+            "type": "string"
+          },
+          "note": {
+            "minLength": 1,
+            "title": "Note",
+            "type": "string"
+          },
+          "locked_at": {
+            "minLength": 1,
+            "title": "Locked At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "adjudicator_id",
+          "note",
+          "locked_at"
+        ],
+        "title": "Adjudication",
+        "type": "object"
+      },
+      "Annotation": {
+        "additionalProperties": false,
+        "properties": {
+          "annotator_id": {
+            "minLength": 1,
+            "title": "Annotator Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "blind",
+              "assisted"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "language_competence": {
+            "minLength": 1,
+            "title": "Language Competence",
+            "type": "string"
+          },
+          "procedural_competence": {
+            "minLength": 1,
+            "title": "Procedural Competence",
+            "type": "string"
+          },
+          "locked_at": {
+            "minLength": 1,
+            "title": "Locked At",
+            "type": "string"
+          },
+          "scope_identity": {
+            "title": "Scope Identity",
+            "type": "string"
+          },
+          "independent": {
+            "title": "Independent",
+            "type": "boolean"
+          },
+          "assessment": {
+            "enum": [
+              "present",
+              "absent_in_reviewed_scope",
+              "unreadable",
+              "ambiguous",
+              "outside_available_scope",
+              "not_assessed"
+            ],
+            "title": "Assessment",
+            "type": "string"
+          },
+          "acceptable_values": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Acceptable Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "annotator_id",
+          "kind",
+          "mode",
+          "language_competence",
+          "procedural_competence",
+          "locked_at",
+          "scope_identity",
+          "independent",
+          "assessment",
+          "acceptable_values"
+        ],
+        "title": "Annotation",
+        "type": "object"
+      },
+      "Calibration": {
+        "additionalProperties": false,
+        "properties": {
+          "development_unit_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Development Unit Ids",
+            "type": "array"
+          },
+          "guide_digest": {
+            "minLength": 1,
+            "title": "Guide Digest",
+            "type": "string"
+          },
+          "completed_at": {
+            "title": "Completed At",
+            "type": "string"
+          },
+          "resolution_note": {
+            "minLength": 1,
+            "title": "Resolution Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "development_unit_ids",
+          "guide_digest",
+          "completed_at",
+          "resolution_note"
+        ],
+        "title": "Calibration",
+        "type": "object"
+      },
+      "GoldLabel": {
+        "additionalProperties": false,
+        "properties": {
+          "assessment": {
+            "enum": [
+              "present",
+              "absent_in_reviewed_scope",
+              "unreadable",
+              "ambiguous",
+              "outside_available_scope",
+              "not_assessed"
+            ],
+            "title": "Assessment",
+            "type": "string"
+          },
+          "acceptable_values": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Acceptable Values",
+            "type": "array"
+          },
+          "checked_scope": {
+            "additionalProperties": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "title": "Checked Scope",
+            "type": "object"
+          },
+          "scope_identity": {
+            "title": "Scope Identity",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "single_annotator_final",
+              "independently_agreed",
+              "adjudicated",
+              "unresolved"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/$defs/Annotation"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "adjudication": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Adjudication"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "completeness_requirements": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Completeness Requirements",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assessment",
+          "acceptable_values",
+          "checked_scope",
+          "scope_identity",
+          "status",
+          "annotations"
+        ],
+        "title": "GoldLabel",
+        "type": "object"
+      },
+      "GoldUnit": {
+        "additionalProperties": false,
+        "properties": {
+          "gold_schema_version": {
+            "const": "skony.gold.v0.2",
+            "default": "skony.gold.v0.2",
+            "title": "Gold Schema Version",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "scope_id": {
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "split_group": {
+            "title": "Split Group",
+            "type": "string"
+          },
+          "body_id": {
+            "title": "Body Id",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "synthetic": {
+            "default": false,
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "fields": {
+            "additionalProperties": {
+              "$ref": "#/$defs/GoldLabel"
+            },
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "scope_id",
+          "split_group",
+          "body_id",
+          "language",
+          "fields"
+        ],
+        "title": "GoldUnit",
+        "type": "object"
+      },
+      "Prediction": {
+        "additionalProperties": false,
+        "properties": {
+          "unit_id": {
+            "title": "Unit Id",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "completed",
+              "failed",
+              "unsupported",
+              "not_run"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "fields": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "unit_id",
+          "outcome",
+          "fields"
+        ],
+        "title": "Prediction",
+        "type": "object"
+      },
+      "ReviewSession": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "reviewer_id": {
+            "title": "Reviewer Id",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "blind",
+              "assisted"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "unit_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Unit Ids",
+            "type": "array"
+          },
+          "capabilities": {
+            "items": {
+              "enum": [
+                "fields",
+                "roles",
+                "relations"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "independent": {
+            "title": "Independent",
+            "type": "boolean"
+          },
+          "exposure_disclosed": {
+            "title": "Exposure Disclosed",
+            "type": "boolean"
+          },
+          "exposed_gold_unit_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Exposed Gold Unit Ids",
+            "type": "array"
+          },
+          "saw_model_output": {
+            "title": "Saw Model Output",
+            "type": "boolean"
+          },
+          "started_at": {
+            "title": "Started At",
+            "type": "string"
+          },
+          "finished_at": {
+            "title": "Finished At",
+            "type": "string"
+          },
+          "active_seconds": {
+            "minimum": 0,
+            "title": "Active Seconds",
+            "type": "number"
+          },
+          "actions": {
+            "minimum": 0,
+            "title": "Actions",
+            "type": "integer"
+          },
+          "corrections": {
+            "minimum": 0,
+            "title": "Corrections",
+            "type": "integer"
+          },
+          "reversals": {
+            "minimum": 0,
+            "title": "Reversals",
+            "type": "integer"
+          },
+          "unresolved_fields": {
+            "minimum": 0,
+            "title": "Unresolved Fields",
+            "type": "integer"
+          },
+          "predictions": {
+            "items": {
+              "$ref": "#/$defs/Prediction"
+            },
+            "title": "Predictions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "reviewer_id",
+          "mode",
+          "unit_ids",
+          "capabilities",
+          "independent",
+          "exposure_disclosed",
+          "exposed_gold_unit_ids",
+          "saw_model_output",
+          "started_at",
+          "finished_at",
+          "active_seconds",
+          "actions",
+          "corrections",
+          "reversals",
+          "unresolved_fields"
+        ],
+        "title": "ReviewSession",
+        "type": "object"
+      },
+      "Reviewer": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Languages",
+            "type": "array"
+          },
+          "body_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Body Ids",
+            "type": "array"
+          },
+          "procedural_competence": {
+            "minLength": 1,
+            "title": "Procedural Competence",
+            "type": "string"
+          },
+          "calibration": {
+            "items": {
+              "$ref": "#/$defs/Calibration"
+            },
+            "title": "Calibration",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "languages",
+          "body_ids",
+          "procedural_competence",
+          "calibration"
+        ],
+        "title": "Reviewer",
+        "type": "object"
+      },
+      "UpliftDesign": {
+        "additionalProperties": false,
+        "properties": {
+          "design": {
+            "const": "matched_tasks_independent_reviewers",
+            "title": "Design",
+            "type": "string"
+          },
+          "predeclared_at": {
+            "title": "Predeclared At",
+            "type": "string"
+          },
+          "frozen_gold_at": {
+            "title": "Frozen Gold At",
+            "type": "string"
+          },
+          "frozen_gold_digest": {
+            "title": "Frozen Gold Digest",
+            "type": "string"
+          },
+          "control_session_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Control Session Ids",
+            "type": "array"
+          },
+          "assisted_session_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Assisted Session Ids",
+            "type": "array"
+          },
+          "memory_effects_policy": {
+            "const": "disjoint_reviewers_no_prior_task_exposure",
+            "title": "Memory Effects Policy",
+            "type": "string"
+          }
+        },
+        "required": [
+          "design",
+          "predeclared_at",
+          "frozen_gold_at",
+          "frozen_gold_digest",
+          "control_session_ids",
+          "assisted_session_ids",
+          "memory_effects_policy"
+        ],
+        "title": "UpliftDesign",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "cohort": {
+        "additionalProperties": true,
+        "title": "Cohort",
+        "type": "object"
+      },
+      "reviewers": {
+        "items": {
+          "$ref": "#/$defs/Reviewer"
+        },
+        "title": "Reviewers",
+        "type": "array"
+      },
+      "sessions": {
+        "items": {
+          "$ref": "#/$defs/ReviewSession"
+        },
+        "title": "Sessions",
+        "type": "array"
+      },
+      "gold": {
+        "items": {
+          "$ref": "#/$defs/GoldUnit"
+        },
+        "title": "Gold",
+        "type": "array"
+      },
+      "design": {
+        "$ref": "#/$defs/UpliftDesign"
+      }
+    },
+    "required": [
+      "cohort",
+      "reviewers",
+      "sessions",
+      "gold",
+      "design"
+    ],
+    "title": "UpliftInput",
+    "type": "object"
+  },
+  "metadata-baseline": {
+    "additionalProperties": false,
+    "properties": {
+      "snapshot": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "items": {},
+            "type": "array"
+          }
+        ],
+        "title": "Snapshot"
+      },
+      "question": {
+        "title": "Question",
+        "type": "string"
+      },
+      "source_reference": {
+        "title": "Source Reference",
+        "type": "string"
+      },
+      "queries": {
+        "additionalProperties": {
+          "type": "string"
+        },
+        "title": "Queries",
+        "type": "object"
+      },
+      "recorded_at": {
+        "title": "Recorded At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "snapshot",
+      "question",
+      "source_reference",
+      "queries",
+      "recorded_at"
+    ],
+    "title": "BaselineInput",
+    "type": "object"
+  },
+  "novelty": {
+    "$defs": {
+      "EvidenceSegment": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "text_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Snapshot Id"
+          },
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Layer Id"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End"
+          },
+          "quote": {
+            "minLength": 1,
+            "title": "Quote",
+            "type": "string"
+          },
+          "basis": {
+            "default": "text",
+            "enum": [
+              "text",
+              "image"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "match_method": {
+            "anyOf": [
+              {
+                "enum": [
+                  "exact",
+                  "whitespace_normalized"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Match Method"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/PDFRegion"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "text_snapshot_id",
+          "page",
+          "layer_id",
+          "quote"
+        ],
+        "title": "EvidenceSegment",
+        "type": "object"
+      },
+      "LayerPage": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "minLength": 1,
+            "title": "Layer Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "page",
+          "layer_id",
+          "text"
+        ],
+        "title": "LayerPage",
+        "type": "object"
+      },
+      "PDFAddition": {
+        "additionalProperties": false,
+        "properties": {
+          "fact_key": {
+            "title": "Fact Key",
+            "type": "string"
+          },
+          "value": {
+            "minLength": 1,
+            "title": "Value",
+            "type": "string"
+          },
+          "contribution": {
+            "enum": [
+              "additional_detail",
+              "corrected_link",
+              "changed_conclusion"
+            ],
+            "title": "Contribution",
+            "type": "string"
+          },
+          "explanation": {
+            "minLength": 1,
+            "title": "Explanation",
+            "type": "string"
+          },
+          "reviewer_id": {
+            "minLength": 1,
+            "title": "Reviewer Id",
+            "type": "string"
+          },
+          "reviewer_kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Reviewer Kind",
+            "type": "string"
+          },
+          "reviewed_at": {
+            "title": "Reviewed At",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "minLength": 1,
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "review_decision_id": {
+            "minLength": 1,
+            "title": "Review Decision Id",
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/$defs/EvidenceSegment"
+            },
+            "minItems": 1,
+            "title": "Evidence",
+            "type": "array"
+          }
+        },
+        "required": [
+          "fact_key",
+          "value",
+          "contribution",
+          "explanation",
+          "reviewer_id",
+          "reviewer_kind",
+          "reviewed_at",
+          "snapshot_id",
+          "review_decision_id",
+          "evidence"
+        ],
+        "title": "PDFAddition",
+        "type": "object"
+      },
+      "PDFRegion": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "minimum": 0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "minimum": 0,
+            "title": "Y",
+            "type": "number"
+          },
+          "width": {
+            "exclusiveMinimum": 0,
+            "title": "Width",
+            "type": "number"
+          },
+          "height": {
+            "exclusiveMinimum": 0,
+            "title": "Height",
+            "type": "number"
+          },
+          "render_width": {
+            "exclusiveMinimum": 0,
+            "title": "Render Width",
+            "type": "integer"
+          },
+          "render_height": {
+            "exclusiveMinimum": 0,
+            "title": "Render Height",
+            "type": "integer"
+          },
+          "transform": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 6,
+            "minItems": 6,
+            "title": "Transform",
+            "type": "array"
+          },
+          "render_identity": {
+            "minLength": 1,
+            "title": "Render Identity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height",
+          "render_width",
+          "render_height",
+          "transform",
+          "render_identity"
+        ],
+        "title": "PDFRegion",
+        "type": "object"
+      },
+      "TextSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "skony.text.v0.2",
+            "default": "skony.text.v0.2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "parser_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parser Name"
+          },
+          "parser_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parser Version"
+          },
+          "configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Configuration"
+          },
+          "origin": {
+            "enum": [
+              "recorded",
+              "legacy_unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/$defs/LayerPage"
+            },
+            "minItems": 1,
+            "title": "Pages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "origin",
+          "pages"
+        ],
+        "title": "TextSnapshot",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "baseline": {
+        "additionalProperties": true,
+        "title": "Baseline",
+        "type": "object"
+      },
+      "additions": {
+        "items": {
+          "$ref": "#/$defs/PDFAddition"
+        },
+        "title": "Additions",
+        "type": "array"
+      },
+      "texts": {
+        "items": {
+          "$ref": "#/$defs/TextSnapshot"
+        },
+        "title": "Texts",
+        "type": "array"
+      },
+      "cohort": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Cohort"
+      }
+    },
+    "required": [
+      "baseline",
+      "additions",
+      "texts"
+    ],
+    "title": "NoveltyInput",
+    "type": "object"
+  },
+  "feasibility": {
+    "$defs": {
+      "Adjudication": {
+        "additionalProperties": false,
+        "properties": {
+          "adjudicator_id": {
+            "minLength": 1,
+            "title": "Adjudicator Id",
+            "type": "string"
+          },
+          "note": {
+            "minLength": 1,
+            "title": "Note",
+            "type": "string"
+          },
+          "locked_at": {
+            "minLength": 1,
+            "title": "Locked At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "adjudicator_id",
+          "note",
+          "locked_at"
+        ],
+        "title": "Adjudication",
+        "type": "object"
+      },
+      "Annotation": {
+        "additionalProperties": false,
+        "properties": {
+          "annotator_id": {
+            "minLength": 1,
+            "title": "Annotator Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "blind",
+              "assisted"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "language_competence": {
+            "minLength": 1,
+            "title": "Language Competence",
+            "type": "string"
+          },
+          "procedural_competence": {
+            "minLength": 1,
+            "title": "Procedural Competence",
+            "type": "string"
+          },
+          "locked_at": {
+            "minLength": 1,
+            "title": "Locked At",
+            "type": "string"
+          },
+          "scope_identity": {
+            "title": "Scope Identity",
+            "type": "string"
+          },
+          "independent": {
+            "title": "Independent",
+            "type": "boolean"
+          },
+          "assessment": {
+            "enum": [
+              "present",
+              "absent_in_reviewed_scope",
+              "unreadable",
+              "ambiguous",
+              "outside_available_scope",
+              "not_assessed"
+            ],
+            "title": "Assessment",
+            "type": "string"
+          },
+          "acceptable_values": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Acceptable Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "annotator_id",
+          "kind",
+          "mode",
+          "language_competence",
+          "procedural_competence",
+          "locked_at",
+          "scope_identity",
+          "independent",
+          "assessment",
+          "acceptable_values"
+        ],
+        "title": "Annotation",
+        "type": "object"
+      },
+      "EvidenceSegment": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "text_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Snapshot Id"
+          },
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Layer Id"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End"
+          },
+          "quote": {
+            "minLength": 1,
+            "title": "Quote",
+            "type": "string"
+          },
+          "basis": {
+            "default": "text",
+            "enum": [
+              "text",
+              "image"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "match_method": {
+            "anyOf": [
+              {
+                "enum": [
+                  "exact",
+                  "whitespace_normalized"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Match Method"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/PDFRegion"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "text_snapshot_id",
+          "page",
+          "layer_id",
+          "quote"
+        ],
+        "title": "EvidenceSegment",
+        "type": "object"
+      },
+      "FeasibilityJudgment": {
+        "additionalProperties": false,
+        "properties": {
+          "body_id": {
+            "title": "Body Id",
+            "type": "string"
+          },
+          "concept": {
+            "title": "Concept",
+            "type": "string"
+          },
+          "expressivity": {
+            "enum": [
+              "faithful",
+              "partial",
+              "not_representable",
+              "untested"
+            ],
+            "title": "Expressivity",
+            "type": "string"
+          },
+          "harmonization": {
+            "enum": [
+              "exact_in_reviewed_scope",
+              "conditional_with_mapping",
+              "semantic_collision",
+              "unmapped"
+            ],
+            "title": "Harmonization",
+            "type": "string"
+          },
+          "reviewer_id": {
+            "minLength": 1,
+            "title": "Reviewer Id",
+            "type": "string"
+          },
+          "reviewer_kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Reviewer Kind",
+            "type": "string"
+          },
+          "rationale": {
+            "minLength": 1,
+            "title": "Rationale",
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/$defs/EvidenceSegment"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "counterexamples": {
+            "items": {
+              "$ref": "#/$defs/EvidenceSegment"
+            },
+            "title": "Counterexamples",
+            "type": "array"
+          }
+        },
+        "required": [
+          "body_id",
+          "concept",
+          "expressivity",
+          "harmonization",
+          "reviewer_id",
+          "reviewer_kind",
+          "rationale",
+          "evidence",
+          "counterexamples"
+        ],
+        "title": "FeasibilityJudgment",
+        "type": "object"
+      },
+      "GoldLabel": {
+        "additionalProperties": false,
+        "properties": {
+          "assessment": {
+            "enum": [
+              "present",
+              "absent_in_reviewed_scope",
+              "unreadable",
+              "ambiguous",
+              "outside_available_scope",
+              "not_assessed"
+            ],
+            "title": "Assessment",
+            "type": "string"
+          },
+          "acceptable_values": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Acceptable Values",
+            "type": "array"
+          },
+          "checked_scope": {
+            "additionalProperties": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "title": "Checked Scope",
+            "type": "object"
+          },
+          "scope_identity": {
+            "title": "Scope Identity",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "single_annotator_final",
+              "independently_agreed",
+              "adjudicated",
+              "unresolved"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/$defs/Annotation"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "adjudication": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Adjudication"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "completeness_requirements": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Completeness Requirements",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assessment",
+          "acceptable_values",
+          "checked_scope",
+          "scope_identity",
+          "status",
+          "annotations"
+        ],
+        "title": "GoldLabel",
+        "type": "object"
+      },
+      "GoldUnit": {
+        "additionalProperties": false,
+        "properties": {
+          "gold_schema_version": {
+            "const": "skony.gold.v0.2",
+            "default": "skony.gold.v0.2",
+            "title": "Gold Schema Version",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "scope_id": {
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "split_group": {
+            "title": "Split Group",
+            "type": "string"
+          },
+          "body_id": {
+            "title": "Body Id",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "synthetic": {
+            "default": false,
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "fields": {
+            "additionalProperties": {
+              "$ref": "#/$defs/GoldLabel"
+            },
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "scope_id",
+          "split_group",
+          "body_id",
+          "language",
+          "fields"
+        ],
+        "title": "GoldUnit",
+        "type": "object"
+      },
+      "LayerPage": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "minLength": 1,
+            "title": "Layer Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "page",
+          "layer_id",
+          "text"
+        ],
+        "title": "LayerPage",
+        "type": "object"
+      },
+      "PDFRegion": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "minimum": 0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "minimum": 0,
+            "title": "Y",
+            "type": "number"
+          },
+          "width": {
+            "exclusiveMinimum": 0,
+            "title": "Width",
+            "type": "number"
+          },
+          "height": {
+            "exclusiveMinimum": 0,
+            "title": "Height",
+            "type": "number"
+          },
+          "render_width": {
+            "exclusiveMinimum": 0,
+            "title": "Render Width",
+            "type": "integer"
+          },
+          "render_height": {
+            "exclusiveMinimum": 0,
+            "title": "Render Height",
+            "type": "integer"
+          },
+          "transform": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 6,
+            "minItems": 6,
+            "title": "Transform",
+            "type": "array"
+          },
+          "render_identity": {
+            "minLength": 1,
+            "title": "Render Identity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "width",
+          "height",
+          "render_width",
+          "render_height",
+          "transform",
+          "render_identity"
+        ],
+        "title": "PDFRegion",
+        "type": "object"
+      },
+      "Prediction": {
+        "additionalProperties": false,
+        "properties": {
+          "unit_id": {
+            "title": "Unit Id",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "completed",
+              "failed",
+              "unsupported",
+              "not_run"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "fields": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "unit_id",
+          "outcome",
+          "fields"
+        ],
+        "title": "Prediction",
+        "type": "object"
+      },
+      "TextSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "skony.text.v0.2",
+            "default": "skony.text.v0.2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "parser_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parser Name"
+          },
+          "parser_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parser Version"
+          },
+          "configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Configuration"
+          },
+          "origin": {
+            "enum": [
+              "recorded",
+              "legacy_unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/$defs/LayerPage"
+            },
+            "minItems": 1,
+            "title": "Pages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "origin",
+          "pages"
+        ],
+        "title": "TextSnapshot",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "body_ids": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Body Ids",
+        "type": "array"
+      },
+      "concepts": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Concepts",
+        "type": "array"
+      },
+      "judgments": {
+        "items": {
+          "$ref": "#/$defs/FeasibilityJudgment"
+        },
+        "title": "Judgments",
+        "type": "array"
+      },
+      "texts": {
+        "items": {
+          "$ref": "#/$defs/TextSnapshot"
+        },
+        "title": "Texts",
+        "type": "array"
+      },
+      "gold": {
+        "items": {
+          "$ref": "#/$defs/GoldUnit"
+        },
+        "title": "Gold",
+        "type": "array"
+      },
+      "predictions": {
+        "items": {
+          "$ref": "#/$defs/Prediction"
+        },
+        "title": "Predictions",
+        "type": "array"
+      },
+      "cohort": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Cohort"
+      }
+    },
+    "required": [
+      "body_ids",
+      "concepts",
+      "judgments",
+      "texts",
+      "gold",
+      "predictions"
+    ],
+    "title": "MatrixInput",
+    "type": "object"
+  },
+  "experiment-freeze": {
+    "$defs": {
+      "AllowedEndpoint": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "affair",
+              "affair_document",
+              "question",
+              "response",
+              "event"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "scope_id": {
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "event_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "decision",
+                  "recommendation",
+                  "other",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Event Kind"
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "scope_id"
+        ],
+        "title": "AllowedEndpoint",
+        "type": "object"
+      },
+      "Chunk": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "pages": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Pages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "pages"
+        ],
+        "title": "Chunk",
+        "type": "object"
+      },
+      "ChunkManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "available_pages": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Available Pages",
+            "type": "array"
+          },
+          "selected_pages": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Selected Pages",
+            "type": "array"
+          },
+          "chunks": {
+            "items": {
+              "$ref": "#/$defs/Chunk"
+            },
+            "minItems": 1,
+            "title": "Chunks",
+            "type": "array"
+          },
+          "selection_policy": {
+            "minLength": 1,
+            "title": "Selection Policy",
+            "type": "string"
+          }
+        },
+        "required": [
+          "available_pages",
+          "selected_pages",
+          "chunks",
+          "selection_policy"
+        ],
+        "title": "ChunkManifest",
+        "type": "object"
+      },
+      "ExperimentInput": {
+        "additionalProperties": false,
+        "properties": {
+          "unit_id": {
+            "title": "Unit Id",
+            "type": "string"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/TextSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "manifest": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ChunkManifest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/$defs/RunEnvelope"
+            },
+            "title": "Runs",
+            "type": "array"
+          },
+          "input_failure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Input Failure"
+          }
+        },
+        "required": [
+          "unit_id"
+        ],
+        "title": "ExperimentInput",
+        "type": "object"
+      },
+      "LayerPage": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "minLength": 1,
+            "title": "Layer Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "page",
+          "layer_id",
+          "text"
+        ],
+        "title": "LayerPage",
+        "type": "object"
+      },
+      "RunEnvelope": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "skony.run.v0.2",
+            "default": "skony.run.v0.2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "text_snapshot_id": {
+            "title": "Text Snapshot Id",
+            "type": "string"
+          },
+          "model_identity": {
+            "title": "Model Identity",
+            "type": "string"
+          },
+          "prompt_identity": {
+            "title": "Prompt Identity",
+            "type": "string"
+          },
+          "schema_identity": {
+            "title": "Schema Identity",
+            "type": "string"
+          },
+          "chunk_manifest_id": {
+            "title": "Chunk Manifest Id",
+            "type": "string"
+          },
+          "scopes": {
+            "items": {
+              "$ref": "#/$defs/ScopeBinding"
+            },
+            "minItems": 1,
+            "title": "Scopes",
+            "type": "array"
+          },
+          "allowed_endpoints": {
+            "items": {
+              "$ref": "#/$defs/AllowedEndpoint"
+            },
+            "title": "Allowed Endpoints",
+            "type": "array"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "text_snapshot_id",
+          "model_identity",
+          "prompt_identity",
+          "schema_identity",
+          "chunk_manifest_id",
+          "scopes"
+        ],
+        "title": "RunEnvelope",
+        "type": "object"
+      },
+      "ScopeBinding": {
+        "additionalProperties": false,
+        "properties": {
+          "scope_id": {
+            "minLength": 1,
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "subject_id": {
+            "minLength": 1,
+            "title": "Subject Id",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "text_snapshot_id": {
+            "title": "Text Snapshot Id",
+            "type": "string"
+          },
+          "association_version": {
+            "title": "Association Version",
+            "type": "string"
+          },
+          "role_version": {
+            "title": "Role Version",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "submission",
+              "executive_response",
+              "decision_record",
+              "minutes",
+              "annex",
+              "combined",
+              "unknown"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "membership": {
+            "default": "unresolved",
+            "enum": [
+              "reviewed",
+              "unresolved"
+            ],
+            "title": "Membership",
+            "type": "string"
+          },
+          "windows": {
+            "items": {
+              "$ref": "#/$defs/ScopeWindow"
+            },
+            "minItems": 1,
+            "title": "Windows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "scope_id",
+          "subject_id",
+          "artifact_id",
+          "text_snapshot_id",
+          "association_version",
+          "role_version",
+          "role",
+          "windows"
+        ],
+        "title": "ScopeBinding",
+        "type": "object"
+      },
+      "ScopeWindow": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "minimum": 1,
+            "title": "Page",
+            "type": "integer"
+          },
+          "layer_id": {
+            "title": "Layer Id",
+            "type": "string"
+          },
+          "start": {
+            "minimum": 0,
+            "title": "Start",
+            "type": "integer"
+          },
+          "end": {
+            "minimum": 0,
+            "title": "End",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "page",
+          "layer_id",
+          "start",
+          "end"
+        ],
+        "title": "ScopeWindow",
+        "type": "object"
+      },
+      "TextSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "skony.text.v0.2",
+            "default": "skony.text.v0.2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "parser_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parser Name"
+          },
+          "parser_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parser Version"
+          },
+          "configuration": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Configuration"
+          },
+          "origin": {
+            "enum": [
+              "recorded",
+              "legacy_unknown"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/$defs/LayerPage"
+            },
+            "minItems": 1,
+            "title": "Pages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "origin",
+          "pages"
+        ],
+        "title": "TextSnapshot",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "cohort": {
+        "additionalProperties": true,
+        "title": "Cohort",
+        "type": "object"
+      },
+      "inputs": {
+        "items": {
+          "$ref": "#/$defs/ExperimentInput"
+        },
+        "title": "Inputs",
+        "type": "array"
+      },
+      "calibration": {
+        "additionalProperties": true,
+        "title": "Calibration",
+        "type": "object"
+      },
+      "frozen_at": {
+        "title": "Frozen At",
+        "type": "string"
+      },
+      "engineering_only": {
+        "default": false,
+        "title": "Engineering Only",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "cohort",
+      "inputs",
+      "calibration",
+      "frozen_at"
+    ],
+    "title": "ExperimentFreezeInput",
+    "type": "object"
+  },
+  "experiment-score": {
+    "$defs": {
+      "Adjudication": {
+        "additionalProperties": false,
+        "properties": {
+          "adjudicator_id": {
+            "minLength": 1,
+            "title": "Adjudicator Id",
+            "type": "string"
+          },
+          "note": {
+            "minLength": 1,
+            "title": "Note",
+            "type": "string"
+          },
+          "locked_at": {
+            "minLength": 1,
+            "title": "Locked At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "adjudicator_id",
+          "note",
+          "locked_at"
+        ],
+        "title": "Adjudication",
+        "type": "object"
+      },
+      "Annotation": {
+        "additionalProperties": false,
+        "properties": {
+          "annotator_id": {
+            "minLength": 1,
+            "title": "Annotator Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "human",
+              "automated",
+              "synthetic"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "blind",
+              "assisted"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "language_competence": {
+            "minLength": 1,
+            "title": "Language Competence",
+            "type": "string"
+          },
+          "procedural_competence": {
+            "minLength": 1,
+            "title": "Procedural Competence",
+            "type": "string"
+          },
+          "locked_at": {
+            "minLength": 1,
+            "title": "Locked At",
+            "type": "string"
+          },
+          "scope_identity": {
+            "title": "Scope Identity",
+            "type": "string"
+          },
+          "independent": {
+            "title": "Independent",
+            "type": "boolean"
+          },
+          "assessment": {
+            "enum": [
+              "present",
+              "absent_in_reviewed_scope",
+              "unreadable",
+              "ambiguous",
+              "outside_available_scope",
+              "not_assessed"
+            ],
+            "title": "Assessment",
+            "type": "string"
+          },
+          "acceptable_values": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Acceptable Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "annotator_id",
+          "kind",
+          "mode",
+          "language_competence",
+          "procedural_competence",
+          "locked_at",
+          "scope_identity",
+          "independent",
+          "assessment",
+          "acceptable_values"
+        ],
+        "title": "Annotation",
+        "type": "object"
+      },
+      "GoldLabel": {
+        "additionalProperties": false,
+        "properties": {
+          "assessment": {
+            "enum": [
+              "present",
+              "absent_in_reviewed_scope",
+              "unreadable",
+              "ambiguous",
+              "outside_available_scope",
+              "not_assessed"
+            ],
+            "title": "Assessment",
+            "type": "string"
+          },
+          "acceptable_values": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Acceptable Values",
+            "type": "array"
+          },
+          "checked_scope": {
+            "additionalProperties": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "title": "Checked Scope",
+            "type": "object"
+          },
+          "scope_identity": {
+            "title": "Scope Identity",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "single_annotator_final",
+              "independently_agreed",
+              "adjudicated",
+              "unresolved"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/$defs/Annotation"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "adjudication": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Adjudication"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "completeness_requirements": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Completeness Requirements",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assessment",
+          "acceptable_values",
+          "checked_scope",
+          "scope_identity",
+          "status",
+          "annotations"
+        ],
+        "title": "GoldLabel",
+        "type": "object"
+      },
+      "GoldUnit": {
+        "additionalProperties": false,
+        "properties": {
+          "gold_schema_version": {
+            "const": "skony.gold.v0.2",
+            "default": "skony.gold.v0.2",
+            "title": "Gold Schema Version",
+            "type": "string"
+          },
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "scope_id": {
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "split_group": {
+            "title": "Split Group",
+            "type": "string"
+          },
+          "body_id": {
+            "title": "Body Id",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "synthetic": {
+            "default": false,
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "fields": {
+            "additionalProperties": {
+              "$ref": "#/$defs/GoldLabel"
+            },
+            "title": "Fields",
+            "type": "object"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "scope_id",
+          "split_group",
+          "body_id",
+          "language",
+          "fields"
+        ],
+        "title": "GoldUnit",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "run": {
+        "additionalProperties": true,
+        "title": "Run",
+        "type": "object"
+      },
+      "gold": {
+        "items": {
+          "$ref": "#/$defs/GoldUnit"
+        },
+        "title": "Gold",
+        "type": "array"
+      },
+      "cohort": {
+        "additionalProperties": true,
+        "title": "Cohort",
+        "type": "object"
+      }
+    },
+    "required": [
+      "run",
+      "gold",
+      "cohort"
+    ],
+    "title": "ExperimentScoreInput",
+    "type": "object"
+  },
+  "readiness": {
+    "additionalProperties": false,
+    "properties": {
+      "cohort": {
+        "additionalProperties": true,
+        "title": "Cohort",
+        "type": "object"
+      },
+      "protocol": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Protocol"
+      },
+      "relation_scores": {
+        "items": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "title": "Relation Scores",
+        "type": "array"
+      },
+      "novelty": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Novelty"
+      },
+      "matrix": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Matrix"
+      },
+      "experiment": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Experiment"
+      }
+    },
+    "required": [
+      "cohort"
+    ],
+    "title": "ReadinessInput",
+    "type": "object"
+  },
+  "coverage": {
+    "additionalProperties": false,
+    "properties": {
+      "cohort": {
+        "additionalProperties": true,
+        "title": "Cohort",
+        "type": "object"
+      },
+      "structure_census": {
+        "anyOf": [
+          {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Structure Census"
+      }
+    },
+    "required": [
+      "cohort"
+    ],
+    "title": "CoverageInput",
+    "type": "object"
+  }
+}

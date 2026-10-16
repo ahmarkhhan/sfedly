@@ -2,16 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Skony · Scoped review and comparison</title>
+  <title>Skony · Compare evidence</title>
   <link rel="stylesheet" href="/scoped.css"><script src="/scoped.js" defer></script>
+  <link rel="stylesheet" href="/workspace.css">
+  <script src="/profile.js" defer></script>
 </head>
 <body>
-  <header><a class="brand" href="/">+ skony.</a><nav aria-label="Workspace"><a href="/">Document review</a><a href="#review">Scoped review</a><a href="#compare">Comparison</a></nav><label>Reviewing as <input id="reviewer" maxlength="80" placeholder="Your name" required></label></header>
-  <main>
-    <div class="intro"><p class="eyebrow">SOURCE → REVIEW → FROZEN EVIDENCE</p><h1>Keep meaning attached to its source.</h1><p>Review a defined affair and document scope. Save accepted decisions as an immutable snapshot, then compare its original wording.</p></div>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="app-shell">
+    <aside class="workspace-sidebar">
+      <a class="brand" href="/" aria-label="Skony home"><span class="brand-mark" aria-hidden="true">+</span>skony<span class="brand-dot">.</span></a>
+      <p class="brand-caption">Parliamentary data<br>with proof.</p>
+      <nav class="workspace-nav" aria-label="Workspace">
+        <a href="/explore"><span class="nav-icon" aria-hidden="true">⌕</span><span><strong>Explore affairs</strong><small>Search, read and find sources</small></span></a>
+        <a href="/"><span class="nav-icon" aria-hidden="true">▤</span><span><strong>Review documents</strong><small>Add PDFs and check extracted fields</small></span></a>
+        <a href="/scoped" aria-current="page"><span class="nav-icon" aria-hidden="true">⇄</span><span><strong>Compare evidence</strong><small>Review scopes and compare snapshots</small></span></a>
+      </nav>
+      <div class="workspace-guide"><strong>Compare in three steps</strong><p>Check a source scope, save accepted decisions, then build a comparison from a saved snapshot.</p></div>
+    </aside>
+  <main id="main-content" tabindex="-1">
+    <header class="workspace-topbar"><span class="breadcrumb">Workspace <span>/</span> <strong>Compare evidence</strong></span><label>Reviewing as <input id="reviewer" maxlength="80" placeholder="Your name" required></label></header>
+    <div class="intro"><p class="eyebrow">SOURCE → REVIEW → FROZEN EVIDENCE</p><h1>Compare evidence.</h1><p>Review a defined affair and document scope. Save accepted decisions as an immutable snapshot, then compare its original wording.</p></div>
+    <nav class="section-nav" aria-label="Comparison steps"><a href="#review"><span>1</span> Review source scope</a><a href="#snapshots"><span>2</span> Save a snapshot</a><a href="#compare"><span>3</span> Build a comparison</a></nav>
     <p id="message" role="status" aria-live="polite">Loading local records…</p>
     <section id="review" aria-labelledby="review-heading">
-      <div class="section-heading"><h2 id="review-heading">Scoped review</h2><button id="refresh" type="button">Refresh records</button></div>
+      <div class="section-heading"><h2 id="review-heading">1. Review source scope</h2><button id="refresh" type="button">Refresh records</button></div>
       <label for="scope">Source scope</label><select id="scope"></select><p id="scope-summary" class="muted"></p>
       <details id="association"><summary>Review affair membership and document role</summary>
         <p>Use a source-supported identity. Identical affair numbers in different bodies remain separate. This form preserves the selected section boundaries.</p>
@@ -45,12 +60,12 @@
         </aside>
       </div>
     </section>
-    <section aria-labelledby="freeze-heading">
-      <h2 id="freeze-heading">Save a reviewed snapshot</h2><p>Only eligible, explicitly accepted decisions can enter a new snapshot. Historical decisions remain available after later changes.</p>
+    <section id="snapshots" aria-labelledby="freeze-heading">
+      <h2 id="freeze-heading">2. Save a reviewed snapshot</h2><p>Only eligible, explicitly accepted decisions can enter a new snapshot. Historical decisions remain available after later changes.</p>
       <div id="decisions"></div><button id="freeze" class="primary" type="button">Freeze selected decisions</button>
     </section>
     <section id="compare" aria-labelledby="compare-heading">
-      <h2 id="compare-heading">Compare frozen evidence</h2>
+      <h2 id="compare-heading">3. Build a comparison</h2>
       <label for="snapshot">Saved snapshot</label><select id="snapshot"></select>
       <label for="question">Question for this comparison</label><input id="question" value="What request, executive response and parliamentary decision are documented in these reviewed scopes?">
       <div id="columns" class="checks"></div>
@@ -59,6 +74,7 @@
       <div id="comparison" class="table-scroll"></div>
     </section>
   </main>
+  </div>
   <dialog id="citation-dialog"><div class="section-heading"><h2>Cited source</h2><button id="close-citation" type="button">Close</button></div><p id="citation-label"></p><div id="citation-content"></div></dialog>
 </body>
 </html>

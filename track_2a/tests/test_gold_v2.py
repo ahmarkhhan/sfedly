@@ -31,6 +31,25 @@ def unit(scope="s1"):
 
 
 class GoldV2Tests(unittest.TestCase):
+    def test_macro_values_keep_undefined_fields_out_of_the_mean(self):
+        gold = unit()
+        result = score([gold], [Prediction(unit_id=gold.unit_id, outcome="completed", fields={name: None for name in FIELDS})],
+                       frozen_unit_ids=[gold.unit_id])
+        macro = result["primary"]["macro"]
+        self.assertIsNone(macro["precision"])
+        self.assertEqual(macro["precision_defined_fields"], 0)
+        self.assertEqual(macro["f1"], 0)
+        self.assertEqual(macro["f1_defined_fields"], 8)
+
+    def test_agreement_counts_source_components_and_keeps_undefined_kappa(self):
+        gold = unit()
+        gold.fields["title"] = GoldLabel.model_validate(label(status="independently_agreed"))
+        result = score([gold], [], frozen_unit_ids=[gold.unit_id])
+        agreement = result["annotation_agreement"]["reviewer_pairs"][0]
+        self.assertEqual(agreement["raw_disposition_agreement"], 1)
+        self.assertEqual(agreement["source_components"], 1)
+        self.assertIsNone(agreement["cohen_kappa"])
+
     def test_primary_and_independent_sensitivity_have_explicit_different_denominators(self):
         gold = unit()
         gold.fields["title"] = GoldLabel.model_validate(label(status="independently_agreed"))

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skony · Explore affairs</title>
+  <link rel="stylesheet" href="/explore.css"><script src="/explore.js" defer></script>
+  <link rel="stylesheet" href="/workspace.css">
+  <script src="/profile.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="app-shell">
+    <aside class="workspace-sidebar">
+      <a class="brand" href="/" aria-label="Skony home"><span class="brand-mark" aria-hidden="true">+</span>skony<span class="brand-dot">.</span></a>
+      <p class="brand-caption">Parliamentary data<br>with proof.</p>
+      <nav class="workspace-nav" aria-label="Workspace">
+        <a href="/explore" aria-current="page"><span class="nav-icon" aria-hidden="true">⌕</span><span><strong>Explore affairs</strong><small>Search, read and find sources</small></span></a>
+        <a href="/"><span class="nav-icon" aria-hidden="true">▤</span><span><strong>Review documents</strong><small>Add PDFs and check extracted fields</small></span></a>
+        <a href="/scoped"><span class="nav-icon" aria-hidden="true">⇄</span><span><strong>Compare evidence</strong><small>Review scopes and compare snapshots</small></span></a>
+      </nav>
+      <div class="workspace-guide"><strong>Start with a question</strong><p>Search the collection, open an affair, then follow a passage to its original PDF.</p><a href="/">Add a document →</a></div>
+    </aside>
+  <main id="main-content" tabindex="-1">
+  <header class="topbar workspace-topbar">
+    <span class="breadcrumb">Workspace <span>/</span> <strong>Explore affairs</strong></span>
+    <span class="local"><span aria-hidden="true">●</span> Local collection</span>
+  </header>
+    <section class="intro" aria-labelledby="heading">
+      <div><p class="eyebrow">FROM PARLIAMENTARY PDFS TO PUBLIC KNOWLEDGE</p><h1 id="heading">Find the question.<br>Follow the evidence.</h1><p class="lede">Discover what was requested, what the government answered, and what was decided—across the documents in your collection.</p></div>
+      <aside class="intro-note"><span class="note-symbol" aria-hidden="true">↗</span><strong>Every finding has a source.</strong><p>Read the original passage, open its PDF, or take the evidence into your own research.</p><a href="/">Add a PDF to your collection →</a></aside>
+    </section>
+    <form id="search-form" class="search-form" role="search">
+      <label class="search-label" for="query">Search source text, names or affair numbers</label>
+      <div class="search-row"><span aria-hidden="true">⌕</span><input id="query" name="q" maxlength="250" placeholder="Try Verkehr, logement, a name, or an affair number" autocomplete="off"><button class="primary" type="submit">Search collection <span aria-hidden="true">→</span></button></div>
+      <div class="filters">
+        <label>Parliament<select id="body"><option value="">All parliaments</option></select></label>
+        <label>Language<select id="language"><option value="">All languages</option></select></label>
+        <label>Topic hint<select id="topic"><option value="">All topics</option></select></label>
+        <label>Evidence<select id="evidence"><option value="">All evidence</option><option value="request">Request text located</option><option value="answer">Answer text located</option><option value="decision">Decision text located</option><option value="no_answer">No answer text located</option><option value="needs_extraction">Not yet extracted</option></select></label>
+        <label>Sources<select id="sources"><option value="all">All local sources</option><option value="real">Real documents</option><option value="practice">Practice documents</option></select></label>
+        <button class="text-button" id="reset" type="button">Clear filters</button>
+      </div>
+      <div class="search-foot"><label class="check"><input id="reviewed-only" type="checkbox"> Show only document-reviewed field values</label><span>Search always includes original PDF text. Topic hints use DE / FR / IT / EN keywords.</span></div>
+    </form>
+    <p id="message" role="status" aria-live="polite">Loading your local collection…</p>
+    <section class="stats" aria-label="Evidence coverage in current results">
+      <div><strong id="stat-dossiers">—</strong><span>Dossiers found</span></div><div><strong id="stat-documents">—</strong><span>Source documents</span></div><div><strong id="stat-answers">—</strong><span>With answer text</span></div><div><strong id="stat-decisions">—</strong><span>With decision text</span></div>
+    </section>
+    <section class="questions" aria-labelledby="questions-heading"><div><p class="eyebrow">START WITH A QUESTION</p><h2 id="questions-heading">What does the collection show?</h2></div><div class="question-buttons"><button type="button" data-evidence="request">What was requested? ↗</button><button type="button" data-evidence="answer">Where is an answer documented? ↗</button><button type="button" data-evidence="decision">What decisions are recorded? ↗</button></div></section>
+    <section class="collection" aria-labelledby="results-heading">
+      <div class="section-heading"><div><h2 id="results-heading">Explore the collection</h2><p id="results-caption">Source passages and document-level fields.</p></div><div class="export-actions"><a id="export-json" class="button secondary" href="/api/explorer/export?format=json" download>Research brief · JSON ↓</a><a id="export-csv" class="button secondary" href="/api/explorer/export?format=csv" download>CSV ↓</a></div></div>
+      <p id="coverage-note" class="coverage-note"></p>
+      <div id="results" class="results"></div>
+      <div id="empty" class="empty" hidden><span aria-hidden="true">⌕</span><h3>No matching dossiers</h3><p>Try fewer words, clear a filter, or add a PDF to your local collection.</p><a href="/">Add or extract a document →</a></div>
+      <div class="pagination"><button id="previous" type="button" class="button secondary" disabled>← Previous</button><span id="page-caption"></span><button id="next" type="button" class="button secondary" disabled>Next →</button></div>
+    </section>
+    <footer><span>Skony · Parliamentary data with proof.</span><span>Local sample coverage. Original PDFs remain the reference.</span></footer>
+  </main>
+  </div>
+  <dialog id="dossier-dialog" aria-labelledby="dossier-title">
+    <div class="dialog-top"><span class="eyebrow">AFFAIR DOSSIER</span><button id="close-dossier" type="button" class="button secondary">Close ×</button></div>
+    <div id="dossier-content"><p>Loading dossier…</p></div>
+  </dialog>
+  <dialog id="evidence-dialog" aria-labelledby="evidence-title"><div class="dialog-top"><h2 id="evidence-title">Source passage</h2><button id="close-evidence" type="button" class="button secondary">Close ×</button></div><p id="evidence-caption"></p><pre id="source-text" tabindex="0"></pre><a id="source-pdf" class="button primary" target="_blank" rel="noopener">Open original PDF ↗</a></dialog>
+</body>
+</html>

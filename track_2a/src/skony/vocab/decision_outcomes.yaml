@@ -1,0 +1,50 @@
+# skony.vocab.decision-outcomes v0.1-draft (2026-10-16)
+# Controlled vocabulary for the outcome of a parliamentary decision on an
+# affair. Only filled when a decision is printed; absence is explicit, never
+# inferred from missing text.
+vocabulary:
+  id: skony.vocab.decision-outcomes
+  version: v0.1-draft
+  status: draft
+  updated: 2026-10-16
+terms:
+  - id: outcome.adopted
+    pref: {en: Adopted / approved, de: Angenommen, fr: Adopte}
+    def: Parliament approved the affair (motion passed, postulate transferred, report approved).
+    maps: {oparl: angenommen}
+    aliases:
+      de: [angenommen, Angenommen, erheblich erklaert, ueberwiesen beschlossen, gutgeheissen]
+      fr: [adopte, Adopte, renvoye au Conseil d'Etat, approuve]
+  - id: outcome.rejected
+    pref: {en: Rejected, de: Abgelehnt, fr: Refuse}
+    def: Parliament refused the affair.
+    maps: {oparl: abgelehnt}
+    aliases:
+      de: [abgelehnt, Abgelehnt, nicht erheblich erklaert, verworfen]
+      fr: [refuse, Refuse, rejete]
+  - id: outcome.partially-adopted
+    pref: {en: Partially adopted, de: Teilweise angenommen, fr: Adopte partiellement}
+    def: Adopted with printed amendments or only in part.
+    maps: {oparl: teilweise angenommen}
+    aliases:
+      de: [teilweise angenommen, in abgeaenderter Fassung angenommen, mit Aenderungen angenommen]
+      fr: [adopte partiellement, adopte avec amendements, adopte en version modifiee]
+  - id: outcome.taken-note
+    pref: {en: Taken note of, de: Kenntnis genommen, fr: Pris acte}
+    def: Report/message formally acknowledged without substantive vote.
+    maps: {}
+    aliases:
+      de: [Kenntnis genommen, zur Kenntnis genommen, gewuerdigt]
+      fr: [pris acte, Pris acte, pris en consideration]
+  - id: outcome.referred-back
+    pref: {en: Referred back, de: Rueckkommissioniert, fr: Renvoye en commission}
+    def: Sent back to committee or government for rework instead of a final decision.
+    maps: {oparl: rueckueberwiesen}
+    aliases:
+      de: [rueckkommissioniert, Rueckweisung, zurueckgewiesen]
+      fr: [renvoye en commission, renvoi, nouveau renvoi]
+  - id: outcome.no-decision
+    pref: {en: No decision recorded, de: Kein Beschluss verzeichnet, fr: Aucune decision consignee}
+    def: Decision field explicitly absent in the reviewed scope (e.g. affair still pending). Use this instead of null only after review confirmed absence; otherwise leave unmapped.
+    maps: {}
+    aliases: {de: [], fr: []}

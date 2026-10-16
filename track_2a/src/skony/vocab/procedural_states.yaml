@@ -1,0 +1,72 @@
+# skony.vocab.procedural-states v0.1-draft (2026-10-16)
+# Controlled vocabulary for the lifecycle state of an affair. Ordered along
+# the typical flow; bodies differ, hence the generic terms.
+vocabulary:
+  id: skony.vocab.procedural-states
+  version: v0.1-draft
+  status: draft
+  updated: 2026-10-16
+terms:
+  - id: state.submitted
+    pref: {en: Submitted, de: Eingereicht, fr: Depose}
+    def: Affair tabled and registered; no further handling yet.
+    maps: {oparl: eingereicht}
+    aliases:
+      de: [eingereicht, Eingereicht am, hinterlegt]
+      fr: [depose, Depose le, enregistre]
+  - id: state.referred
+    pref: {en: Referred / assigned, de: Ueberwiesen / Zugewiesen, fr: Renvoye}
+    def: Sent to government or committee for treatment.
+    maps: {oparl: ueberwiesen}
+    aliases:
+      de: [ueberwiesen, zugewiesen, Ueberweisung, an die Kommission]
+      fr: [renvoye, renvoi en commission, transmis]
+  - id: state.pending-answer
+    pref: {en: Pending answer, de: Hängig / Antwort ausstehend, fr: Reponse pendante}
+    def: Government owes a written answer that has not been published.
+    maps: {}
+    aliases:
+      de: [haengig, pendent, unbeantwortet, Antwort ausstehend]
+      fr: [pendant, en suspens, sans reponse]
+  - id: state.answered
+    pref: {en: Answered, de: Beantwortet, fr: Repondu}
+    def: Government's substantive answer published.
+    maps: {oparl: beantwortet}
+    aliases:
+      de: [beantwortet, Antwort des Regierungsrates, Antwort des Stadtrates, schriftlich beantwortet]
+      fr: [repondu, Reponse du Conseil d'Etat, Reponse du Conseil municipal, reponse publiee]
+  - id: state.debated
+    pref: {en: Debated, de: Beraten, fr: Debattu}
+    def: Discussed in plenary session.
+    maps: {}
+    aliases:
+      de: [beraten, im Rat behandelt, oeffentlich beraten]
+      fr: [debattu, traite en seance, debat public]
+  - id: state.decided
+    pref: {en: Decided, de: Beschlossen, fr: Decide}
+    def: Parliament voted; outcome recorded in decision_outcomes.
+    maps: {oparl: beschlossen}
+    aliases:
+      de: [beschlossen, Abstimmung, Schlussabstimmung]
+      fr: [decide, vote, vote final]
+  - id: state.closed
+    pref: {en: Closed / completed, de: Abgeschlossen / Erledigt, fr: Cloture / Traite}
+    def: No further parliamentary action expected (after decision, answer or withdrawal). Terminal state.
+    maps: {oparl: erledigt}
+    aliases:
+      de: [abgeschlossen, erledigt, abgeschrieben]
+      fr: [cloture, traite, raye du role]
+  - id: state.withdrawn
+    pref: {en: Withdrawn, de: Zurueckgezogen, fr: Retire}
+    def: Submitter retracted the affair. Terminal state.
+    maps: {oparl: zurueckgezogen}
+    aliases:
+      de: [zurueckgezogen, Rueckzug]
+      fr: [retire, retrait]
+  - id: state.expired
+    pref: {en: Expired / lapsed, de: Verfallen / Abgelaufen, fr: Perime}
+    def: Lapsed through legislature end or deadline. Terminal state.
+    maps: {}
+    aliases:
+      de: [verfallen, abgelaufen, gegenstandslos]
+      fr: [perime, caduc, tombe]

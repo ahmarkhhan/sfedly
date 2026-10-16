@@ -3,6 +3,8 @@
 const $ = id => document.getElementById(id);
 const labels = {title:"Title",affair_type_raw:"Affair type",submitter_raw:"Submitted by",submitted_date_raw:"Date on the document",question_text:"Request / question",answer_text:"Government answer",decision_raw:"Decision",decision_date_raw:"Decision date"};
 let state = null, current = null, page = 1, view = "image", activeEvidence = null, polling = null, toastTimer = null, formAction = null, loading = false;
+let pinnedEvidence = null, previewSource = null, previewTimer = null, evidenceRequest = 0;
+const evidenceCache = new Map();
 const node = (tag, className, text) => {const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=text;return n;};
 const apiPath = (suffix="", id=current?.id) => `/api/documents/${encodeURIComponent(id)}${suffix}`;
 
@@ -34,10 +36,10 @@ function renderQueue(){
   }
 }
 async function selectDocument(id){
-  try{current=await api(apiPath("",id));page=1;activeEvidence=null;renderDocument();renderQueue();ensurePolling();}
+  try{current=await api(apiPath("",id));page=1;resetEvidence();evidenceCache.clear();renderDocument();renderQueue();ensurePolling();}
   catch(error){toast(error.message,true);}
 }
-function renderDocument({preserveSource=false}={}){
+function renderDocument(){
   $("empty-state").hidden=!!current;$("workspace").hidden=!current;if(!current)return;
   const doc=current.document,source=current.source,title=current.fields.title;
   $("document-title").textContent=(title.review?.value||title.suggestion.value||current.filename);
@@ -53,7 +55,10 @@ function renderDocument({preserveSource=false}={}){
   $("extraction-notice").hidden=current.extraction_state==="idle";
   $("extraction-notice").textContent=current.extraction_state==="running"?"Apertus is reading this document. Your saved review decisions will be kept.":current.extraction_error||"";
   $("original-link").href=apiPath("/pdf");
-  renderFields();if(!preserveSource)renderSource();
+  // A saved correction or new extraction invalidates the displayed provenance.
+  clearTimeout(previewTimer);previewSource=null;
+  if(activeEvidence){const field=activeEvidence.field,item=current.fields[field],p=(item?.review||item?.suggestion)?.provenance;activeEvidence=p?{field,provenance:p}:null;pinnedEvidence=activeEvidence;if(p)page=p.page;}
+  renderFields();renderSource();
 }
 function reasonText(reason){
   if(reason==="not_run")return "Run Apertus to suggest a value, or enter a correction after checking the source.";
@@ -69,10 +74,20 @@ function renderFields(){
     const heading=node("div","field-heading");heading.append(node("span","field-label",label));
     const status=review?"reviewed":suggestion.status==="source_located"?"located":suggestion.status==="not_extracted"?"waiting":"missing";
     heading.append(node("span",`badge ${status}`,review?(review.decision==="absent"?"✓ Reviewed absent":"✓ Reviewed"):status==="located"?"Source located":status==="waiting"?"Awaiting extraction":"Needs review"));card.append(heading);
-    card.append(node("p",`field-value${effective.value===null?" absent":""}`,effective.value??(review?"Not present in the checked source":"No value accepted")));
+    const provenance=effective.provenance;
+    const value=node(provenance?"button":"p",`field-value${provenance?" evidence-value":""}${effective.value===null?" absent":""}`,effective.value??(review?"Not present in the checked source":"No value accepted"));
+    if(provenance){
+      value.type="button";value.setAttribute("aria-label",`${label}: ${effective.value}. Show supporting passage on page ${provenance.page}`);value.setAttribute("aria-pressed",pinnedEvidence?.field===key?"true":"false");
+      value.addEventListener("pointerenter",event=>{if(event.pointerType!=="touch")previewTimer=setTimeout(()=>previewEvidence(key,provenance),160);});
+      value.addEventListener("pointerleave",()=>{clearTimeout(previewTimer);if(document.activeElement!==value)restoreEvidence();});
+      value.addEventListener("focus",()=>{clearTimeout(previewTimer);previewEvidence(key,provenance);});
+      value.addEventListener("blur",()=>{clearTimeout(previewTimer);restoreEvidence();});
+      value.addEventListener("click",()=>showEvidence(key,provenance));
+    }
+    card.append(value);
     if(review)card.append(node("p","review-attribution",`${review.decision==="corrected"?"Corrected":review.decision==="absent"?"Marked absent":"Confirmed"} by ${review.reviewer}${review.provenance?.basis==="image"?" · Original page checked":""}${review.note?` · ${review.note}`:""}`));
     else if(suggestion.value===null)card.append(node("p","field-hint",reasonText(suggestion.reason)));
-    const actions=node("div","field-actions"),provenance=effective.provenance;
+    const actions=node("div","field-actions");
     if(provenance){const source=node("button","source-action",`Page ${provenance.page} · View evidence ↗`);source.addEventListener("click",()=>showEvidence(key,provenance));actions.append(source);}
     if(review){const undo=node("button","text-button","Undo review");undo.addEventListener("click",()=>saveAction(key,"undo"));actions.append(undo);}
     else if(suggestion.value!==null){const confirm=node("button","confirm-action","Confirm ✓");confirm.disabled=current.extraction_state==="running";confirm.addEventListener("click",()=>saveAction(key,"confirm"));actions.append(confirm);}
@@ -82,12 +97,14 @@ function renderFields(){
   }
 }
 function renderSource(){
+  if(!current)return;
   const pages=current.document.pages,currentPage=pages.find(p=>p.number===page)||pages[0];page=currentPage.number;
   $("page-number").textContent=`${page} / ${pages.length}`;$("previous-page").disabled=page<=1;$("next-page").disabled=page>=pages.length;
   $("image-tab").classList.toggle("selected",view==="image");$("image-tab").setAttribute("aria-pressed",view==="image");
   $("text-tab").classList.toggle("selected",view==="text");$("text-tab").setAttribute("aria-pressed",view==="text");
   $("image-view").hidden=view!=="image";$("text-view").hidden=view!=="text";$("zoom-button").hidden=view!=="image";
   $("source-footer-caption").textContent=view==="image"?"The original page is the reference for review.":"Extracted text can contain OCR errors. Check the page image.";
+  renderEvidence();
   if(view==="image"){
     const src=apiPath(`/pages/${page}.png`);
     if($("page-image").getAttribute("src")!==src){$("page-image").hidden=true;$("image-message").hidden=false;$("image-message").textContent="Loading original page…";$("page-image").src=src;}
@@ -111,7 +128,55 @@ function renderSource(){
     }
   }
 }
-function showEvidence(field,provenance){page=provenance.page;activeEvidence={field,provenance};view=provenance.basis==="image"?"image":"text";renderSource();if(window.innerWidth<=800)$("source-stage").scrollIntoView({block:"center",behavior:"smooth"});}
+function resetEvidence(){clearTimeout(previewTimer);activeEvidence=null;pinnedEvidence=null;previewSource=null;evidenceRequest++;}
+function previewEvidence(field,provenance){
+  if(activeEvidence?.field===field)return;
+  if(!previewSource)previewSource={page,view};
+  activeEvidence={field,provenance};page=provenance.page;view="image";renderSource();
+}
+function restoreEvidence(){
+  clearTimeout(previewTimer);
+  if(!previewSource)return;
+  activeEvidence=pinnedEvidence;page=pinnedEvidence?.provenance.page||previewSource.page;view=previewSource.view;previewSource=null;renderSource();
+}
+function showEvidence(field,provenance){
+  clearTimeout(previewTimer);previewSource=null;page=provenance.page;activeEvidence={field,provenance};pinnedEvidence=activeEvidence;view="image";renderSource();
+  if(window.innerWidth<=800)$("source-stage").scrollIntoView({block:"center",behavior:"smooth"});
+}
+function scrollHighlight(){
+  if(view!=="image"||$("page-image").hidden)return;
+  const region=$("page-highlights").querySelector("rect");if(!region)return;
+  const stage=$("source-stage"),box=region.getBoundingClientRect(),viewport=stage.getBoundingClientRect();
+  if(box.top<viewport.top+20||box.bottom>viewport.bottom-20)stage.scrollTop+=box.top-viewport.top-stage.clientHeight/2+box.height/2;
+}
+async function renderEvidence(){
+  const request=++evidenceRequest,p=activeEvidence?.provenance,field=activeEvidence?.field;
+  $("page-highlights").replaceChildren();$("source-evidence").hidden=!p||p.page!==page;
+  for(const key of Object.keys(labels)){
+    const card=$(`field-${key}`);card?.classList.toggle("evidence-active",key===field);
+    card?.querySelector(".evidence-value")?.setAttribute("aria-pressed",pinnedEvidence?.field===key?"true":"false");
+  }
+  if(!p||p.page!==page)return;
+  $("source-evidence-title").textContent=`${labels[field]} · Page ${p.page}`;
+  $("source-evidence-quote").textContent=p.quote;
+  $("source-evidence-status").textContent="Locating the supporting lines on the PDF…";
+  const id=current.id,revision=current.revision,cacheKey=`${id}:${revision}:${field}`;
+  try{
+    if(!evidenceCache.has(cacheKey)){
+      if(evidenceCache.size>=32)evidenceCache.clear();
+      evidenceCache.set(cacheKey,api(apiPath(`/fields/${encodeURIComponent(field)}/evidence`,id)).catch(error=>{evidenceCache.delete(cacheKey);throw error;}));
+    }
+    const result=await evidenceCache.get(cacheKey);
+    if(request!==evidenceRequest||current.id!==id||current.revision!==revision)return;
+    if(result.revision!==revision){$("source-evidence-status").textContent="This document changed. Reload it to see the latest evidence.";return;}
+    const located=result.status==="located"&&result.page===page;
+    $("source-evidence-status").textContent=located?`Supporting lines highlighted · ${current.fields[field].review?"Reviewed value":"Unreviewed suggestion"}. Check the meaning in context.`:result.reason;
+    if(!located)return;
+    const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("viewBox","0 0 1 1");svg.setAttribute("preserveAspectRatio","none");
+    for(const region of result.regions){const rect=document.createElementNS("http://www.w3.org/2000/svg","rect");for(const key of ["x","y","width","height"])rect.setAttribute(key,String(region[key]));svg.append(rect);}
+    $("page-highlights").append(svg);requestAnimationFrame(scrollHighlight);
+  }catch(error){if(request===evidenceRequest)$("source-evidence-status").textContent="PDF highlighting is unavailable. Use extracted text to inspect the passage.";}
+}
 function openReview(field,action){
   formAction={field,action,revision:current.revision,documentId:current.id};const item=current.fields[field],value=item.review||item.suggestion,p=value.provenance;
   $("dialog-title").textContent=`${action==="missing"?"Mark absent":"Correct"}: ${labels[field].toLowerCase()}`;
@@ -162,12 +227,22 @@ async function showHistory(){
 }
 $("upload-button").addEventListener("click",()=>$("upload-input").click());$("empty-upload").addEventListener("click",()=>$("upload-input").click());$("upload-input").addEventListener("change",event=>upload(event.target.files[0]));
 $("reviewer").addEventListener("change",()=>{try{localStorage.setItem("skony.reviewer",reviewer());}catch{}});
-$("previous-page").addEventListener("click",()=>{page--;activeEvidence=null;renderSource();});$("next-page").addEventListener("click",()=>{page++;activeEvidence=null;renderSource();});
+$("previous-page").addEventListener("click",()=>{page--;resetEvidence();renderSource();});$("next-page").addEventListener("click",()=>{page++;resetEvidence();renderSource();});
+$("clear-evidence").addEventListener("click",()=>{resetEvidence();renderSource();});
+document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!$("review-dialog").open&&!$("history-dialog").open){resetEvidence();renderSource();}});
 $("image-tab").addEventListener("click",()=>{view="image";renderSource();});$("text-tab").addEventListener("click",()=>{view="text";renderSource();});
 $("zoom-button").addEventListener("click",()=>{const zoomed=$("image-view").classList.toggle("zoomed");$("zoom-button").textContent=zoomed?"Fit page −":"Zoom in ＋";});
-$("page-image").addEventListener("load",()=>{$("image-message").hidden=true;$("page-image").hidden=false;});$("page-image").addEventListener("error",()=>{$("page-image").hidden=true;$("image-message").hidden=false;$("image-message").textContent="Page preview unavailable. Open the original PDF above, or inspect extracted text.";});
+$("page-image").addEventListener("load",()=>{$("image-message").hidden=true;$("page-image").hidden=false;$("page-highlights").hidden=false;scrollHighlight();});$("page-image").addEventListener("error",()=>{$("page-image").hidden=true;$("page-highlights").hidden=true;$("image-message").hidden=false;$("image-message").textContent="Page preview unavailable. Open the original PDF above, or inspect extracted text.";});
 $("extract-button").addEventListener("click",async()=>{try{await api(apiPath("/extract"),{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});current=await api(apiPath());await refreshState();renderDocument({preserveSource:true});ensurePolling();toast("Apertus extraction started. Saved reviews will be kept.");}catch(error){toast(error.message,true);}});
 $("export-button").addEventListener("click",exportReviewed);$("audit-button").addEventListener("click",showHistory);$("close-history").addEventListener("click",()=>$("history-dialog").close());
 $("close-review").addEventListener("click",()=>$("review-dialog").close());$("cancel-review").addEventListener("click",()=>$("review-dialog").close());$("review-basis").addEventListener("change",updateDialogHelp);
 $("review-form").addEventListener("submit",async event=>{event.preventDefault();$("save-review").disabled=true;const missing=formAction.action==="missing";await saveAction(formAction.field,formAction.action,{note:$("review-note").value,...(!missing?{value:$("review-value").value,page:Number($("review-page").value),quote:$("review-quote").value,basis:$("review-basis").value}:{})},{id:formAction.documentId,revision:formAction.revision});$("save-review").disabled=false;});
-(async()=>{try{try{$("reviewer").value=localStorage.getItem("skony.reviewer")||"Local reviewer";}catch{}await refreshState();if(state.documents.length)await selectDocument(state.documents[0].id);else renderDocument();}catch(error){toast("Could not load the workbench. Reload after starting the local server.",true);}})();
+(async()=>{try{try{$("reviewer").value=localStorage.getItem("skony.reviewer")||"Local reviewer";}catch{}await refreshState();
+  const params=new URLSearchParams(location.search),requested=params.get("document");
+  if(state.documents.length){await selectDocument(state.documents.some(d=>d.id===requested)?requested:state.documents[0].id);
+    const field=params.get("field"),p=Number(params.get("page"));
+    if(requested===current?.id){if(current.document.pages.some(item=>item.number===p))page=p;
+      const evidence=current.fields[field]?.review?.provenance||current.fields[field]?.suggestion?.provenance;
+      if(evidence)showEvidence(field,evidence);else renderSource();}
+  }else renderDocument();
+}catch(error){toast("Could not load the workbench. Reload after starting the local server.",true);}})();

@@ -2,7 +2,7 @@
 const $=id=>document.getElementById(id);
 const labels={title:"Title",affair_type_raw:"Affair type",submitter_raw:"Submitters",submitted_date_raw:"Submission date",question_text:"Request / question",answer_text:"Executive response",decision_raw:"Parliamentary decision",decision_date_raw:"Decision date"};
 const element=(tag,text,className)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n;};
-let state,scopes=[],affairs=[],reviews=[],selectedScope,currentText,currentSnapshot,comparisonResult;
+let state,scopes=[],affairs=[],reviews=[],selectedScope,currentText,comparisonResult,comparisonVersion=0;
 const enc=encodeURIComponent;
 function message(text,error=false){$("message").textContent=text;$("message").classList.toggle("error",error);}
 function reviewer(){const name=$("reviewer").value.trim();if(!name)throw new Error("Enter your reviewer name before recording a decision.");return name;}
@@ -17,7 +17,7 @@ async function refresh(){
   [scopes,affairs,reviews]=await Promise.all([api("/api/v2/scopes"),api("/api/v2/affairs"),api("/api/v2/reviews")]);
   $("scope").replaceChildren(...scopes.map(s=>option(s.id,scopeName(s))));if(scopes.some(s=>s.id===previous))$("scope").value=previous;
   $("existing-affair").replaceChildren(option("","Register an affair"),...affairs.map(a=>option(a.id,`${a.value.body_key} · ${a.value.official_affair_id||a.id}`)));
-  if(scopes.length)await selectScope();else message("Add a PDF in Document review, then register its source scope.");
+  if(scopes.length)await selectScope();else message("Add a PDF in Review documents, then register its source scope.");
   renderDecisions();await loadSnapshots();
 }
 async function selectScope(){
@@ -72,7 +72,7 @@ function renderDecisions(){
   if(!reviews.length)$("decisions").append(element("p","No scoped review decisions yet.","muted"));
 }
 async function loadSnapshots(selectId){const previous=selectId||$("snapshot").value,snapshots=await api("/api/v2/snapshots");$("snapshot").replaceChildren(...snapshots.map(s=>option(s.id,`${s.id.slice(0,12)} · ${s.scope_ids.length} scopes · ${s.reviewed_fields} reviewed fields`)));if(snapshots.some(s=>s.id===previous))$("snapshot").value=previous;}
-function clearComparison(){currentSnapshot=null;comparisonResult=null;$("comparison").replaceChildren();$("download-comparison").disabled=true;$("historical").hidden=true;}
+function clearComparison(){comparisonVersion++;comparisonResult=null;$("comparison").replaceChildren();$("download-comparison").disabled=true;$("historical").hidden=true;}
 async function showCitation(cite,snapshot){
   $("citation-label").textContent=cite.capability==="text_highlight"?`Exact text-layer highlight · page ${cite.page} · ${cite.layer_id}`:cite.label;
   const box=$("citation-content");box.replaceChildren();
@@ -96,14 +96,20 @@ async function showCitation(cite,snapshot){
 }
 function download(value,name){const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)],{type:"application/json"})),a=element("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 async function compare(){
-  if(!$("snapshot").value)throw new Error("Save or select a reviewed snapshot first.");currentSnapshot=await api(`/api/v2/snapshots/${enc($("snapshot").value)}`);
+  clearComparison();const version=comparisonVersion,snapshotId=$("snapshot").value,question=$("question").value;
+  if(!snapshotId)throw new Error("Save or select a reviewed snapshot first.");
   const columns=[...$("columns").querySelectorAll("input:checked")].map(i=>i.value);if(!columns.length)throw new Error("Select at least one comparison field.");
-  comparisonResult=await api("/api/v2/comparisons",{spec:{schema_version:"skony.comparison.v0.2",question:$("question").value,snapshot_id:currentSnapshot.snapshot_id,scope_ids:currentSnapshot.snapshot.scope_ids,columns,permitted_mapping_relations:["exact_in_scope"],ordering:"subject_scope_predicate",unknown_policy:"preserve"},current:false});
+  let snapshot,result;
+  try{
+    snapshot=await api(`/api/v2/snapshots/${enc(snapshotId)}`);if(version!==comparisonVersion)return;
+    result=await api("/api/v2/comparisons",{spec:{schema_version:"skony.comparison.v0.2",question,snapshot_id:snapshot.snapshot_id,scope_ids:snapshot.snapshot.scope_ids,columns,permitted_mapping_relations:["exact_in_scope"],ordering:"subject_scope_predicate",unknown_policy:"preserve"},current:false});
+  }catch(error){if(version!==comparisonVersion)return;throw error;}
+  if(version!==comparisonVersion)return;comparisonResult=result;
   $("historical").hidden=!comparisonResult.historical_warning;$("comparison").replaceChildren();
   const table=element("table"),thead=element("thead"),header=element("tr");header.append(element("th","Affair / scope"),...columns.map(c=>element("th",labels[c])));thead.append(header);const tbody=element("tbody");
   for(const row of comparisonResult.result.rows){const tr=element("tr"),first=element("td");first.append(element("strong",row.subject_id),element("p",row.scope_id,"muted"));if(!row.compatible_for_aggregation)first.append(element("p",row.caveats.length?"Incompatible mapping: original wording only.":"No reviewed equivalence mapping: original wording only.","muted"));tr.append(first);
     for(const col of columns){const field=row.fields[col],td=element("td");td.append(element("div",field.value??(field.source_assessment==="absent_in_reviewed_scope"?"Not present in the reviewed material":"Unknown / not assessed"),"cell-value"));td.append(element("p",field.source_assessment.replaceAll("_"," "),"muted"));if(field.completeness)td.append(element("p",`Completeness: ${field.completeness.semantic_completeness.replaceAll("_"," ")}`,"muted"));
-      for(const [i,cite] of field.citations.entries()){const button=element("button",`Source ${i+1} · p. ${cite.page}`);button.addEventListener("click",()=>act(()=>showCitation(cite,currentSnapshot.snapshot)));td.append(button);}tr.append(td);}tbody.append(tr);}
+      for(const [i,cite] of field.citations.entries()){const button=element("button",`Source ${i+1} · p. ${cite.page}`);button.addEventListener("click",()=>act(()=>showCitation(cite,snapshot.snapshot)));td.append(button);}tr.append(td);}tbody.append(tr);}
   table.append(thead,tbody);$("comparison").append(table);$("download-comparison").disabled=false;message("Comparison reproduced from frozen reviewed evidence. Unknown fields remain explicit.");
 }
 $("scope").addEventListener("change",()=>act(selectScope));$("refresh").addEventListener("click",()=>act(refresh));$("source-page").addEventListener("change",showCurrentText);$("existing-affair").addEventListener("change",toggleAffair);$("add-segment").addEventListener("click",addSegment);$("close-citation").addEventListener("click",()=>$("citation-dialog").close());
@@ -111,9 +117,10 @@ $("association-form").addEventListener("submit",event=>{event.preventDefault();a
   if(!subject){subject=$("affair-id").value.trim();await api("/api/v2/affairs",{revision:0,affair:{internal_id:subject,provider_namespace:$("provider").value.trim(),body_id:$("body-id").value.trim(),body_key:$("body-key").value.trim(),official_affair_id:$("official-id").value.trim()||null,jurisdiction_level:$("level").value,source_ids:selectedScope.source_ids}});}
   await api("/api/v2/scopes",{revision:selectedScope.revision,reviewer:name,note,scope:{binding:{...selectedScope.binding,subject_id:subject,membership:"reviewed",role:$("role").value},source_ids:selectedScope.source_ids,mapping_ids:selectedScope.mapping_ids}});await refresh();message("Association saved. Dependent reviews are checked against its new version.");});});
 $("correction-form").addEventListener("submit",event=>{event.preventDefault();act(async()=>{const assessment=$("assessment").value,segments=[],image_segments=[];if(assessment==="present")for(const row of $("segments").querySelectorAll(".segment")){const page=currentText.pages[Number(row.querySelector("select").value)],quote=row.querySelector("textarea").value;if(!quote.trim())throw new Error("Enter each supporting passage.");if($("basis").value==="text")segments.push({page:page.page,layer_id:page.layer_id,quote,context_anchor:null});else image_segments.push({artifact_id:selectedScope.binding.artifact_id,text_snapshot_id:null,page:page.page,layer_id:null,quote,basis:"image",note:$("visual-note").value});}
-  await api("/api/v2/corrections",{scope_id:selectedScope.id,predicate:$("field").value,assessment,segments,image_segments});await loadClaims();message("Proposal saved with its source evidence. Review its meaning before accepting.");});});
+  await api("/api/v2/corrections",{scope_id:selectedScope.id,predicate:$("field").value,assessment,segments,image_segments});await refresh();message("Proposal saved with its source evidence. Review its meaning before accepting.");});});
 $("freeze").addEventListener("click",()=>act(async()=>{const selected=[...$("decisions").querySelectorAll("input:checked")];if(!selected.length)throw new Error("Select eligible reviewed decisions to freeze.");const result=await api("/api/v2/snapshots",{decision_ids:selected.map(i=>i.value),scope_ids:[...new Set(selected.map(i=>i.dataset.scope))],exclusions:[]});clearComparison();await loadSnapshots(result.snapshot_id);message(`Snapshot saved: ${result.snapshot_id.slice(0,12)}. Its source evidence and decisions are frozen.`);}));
 $("snapshot").addEventListener("change",clearComparison);
+$("columns").addEventListener("change",clearComparison);$("question").addEventListener("input",clearComparison);
 $("compare-button").addEventListener("click",()=>act(compare));$("download-snapshot").addEventListener("click",()=>act(async()=>{const value=await api(`/api/v2/snapshots/${enc($("snapshot").value)}`);download(value,`skony-snapshot-${value.snapshot_id.slice(0,12)}.json`);}));$("download-comparison").addEventListener("click",()=>{if(comparisonResult)download(comparisonResult,`skony-comparison-${comparisonResult.result_id.slice(0,12)}.json`);});
 $("reviewer").addEventListener("change",()=>{try{localStorage.setItem("skony.reviewer",$("reviewer").value);}catch{}});
 for(const [key,label] of Object.entries(labels)){$("field").append(option(key,label));const c=checkLabel(label);c.input.value=key;c.input.checked=["question_text","answer_text","decision_raw"].includes(key);$("columns").append(c.label);}

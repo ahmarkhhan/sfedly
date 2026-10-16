@@ -1,0 +1,67 @@
+# skony.vocab.actor-roles v0.1-draft (2026-10-16)
+# Controlled vocabulary for actor roles in an affair.
+# Mapping reference targets (see docs/VOCABULARY.md):
+#   popolo - Popolo 1.0 Membership/Post role semantics (naming alignment)
+#   oparl  - OParl 1.1 Person membership semantics
+vocabulary:
+  id: skony.vocab.actor-roles
+  version: v0.1-draft
+  status: draft
+  updated: 2026-10-16
+terms:
+  - id: role.submitter
+    pref: {en: Submitter, de: Einreicher/in, fr: Auteur/e}
+    def: Person or group that tabled the affair.
+    maps: {popolo: member}
+    aliases:
+      de: [Einreicher, Einreicherin, Erstunterzeichner, Motionaer, Interpellant, Postulant]
+      fr: [Auteur, Autrice, Premier signataire, Motionnaire, Interpellant, Postulant]
+  - id: role.cosignatory
+    pref: {en: Co-signatory, de: Mitunterzeichner/in, fr: Cosignataire}
+    def: Additional signatory supporting the affair.
+    maps: {popolo: member}
+    aliases:
+      de: [Mitunterzeichner, Mitunterzeichnerin, Unterschrieben von]
+      fr: [Cosignataire, Signe aussi par]
+  - id: role.committee
+    pref: {en: Committee, de: Kommission, fr: Commission}
+    def: Parliamentary committee as a collective actor (submitter, reporter or examiner).
+    maps: {popolo: organization}
+    aliases:
+      de: [Kommission, Spezialkommission, Geschaefstpruefungskommission]
+      fr: [Commission, Commission speciale, Commission de gestion]
+  - id: role.parliamentary-group
+    pref: {en: Parliamentary group, de: Fraktion, fr: Groupe parlementaire}
+    def: Party group as collective submitter.
+    maps: {popolo: organization}
+    aliases:
+      de: [Fraktion, Fraktion der]
+      fr: [Groupe, Groupe parlementaire]
+  - id: role.government
+    pref: {en: Government, de: Regierungsrat / Stadtrat, fr: Conseil d'Etat / Conseil municipal}
+    def: Executive body of the jurisdiction, as author of reports/messages or addressee of questions.
+    maps: {popolo: organization}
+    aliases:
+      de: [Regierungsrat, Stadtrat, Gemeinderat, Bundesrat, Einwohnerrat]
+      fr: [Conseil d'Etat, Conseil municipal, Conseil administratif, Conseil federal, Conseil communal]
+  - id: role.respondent-minister
+    pref: {en: Responsible councillor / minister, de: Zustaendiges Departement, fr: Conseiller/ere responsable}
+    def: The executive member or department named as responder.
+    maps: {popolo: member}
+    aliases:
+      de: [Departement, Baudirektion, Finanzdirektion, Sicherheitsdirektion, Gesundheitsdirektion, Erziehungsdirektion]
+      fr: [Departement, Conseiller d'Etat, Conseillere d'Etat, Syndic]
+  - id: role.chancellor
+    pref: {en: Chancellor / secretariat, de: Kanzlei, fr: Chancellerie}
+    def: Administrative office registering, numbering and publishing affairs; never a substantive actor.
+    maps: {popolo: organization}
+    aliases:
+      de: [Kanzlei, Staatskanzlei, Stadtkanzlei, Gemeindeschreiber]
+      fr: [Chancellerie, Chancellerie d'Etat, Secretariat]
+  - id: role.petitioner
+    pref: {en: Petitioner, de: Petent/in, fr: Petitionnaire}
+    def: External person or organisation filing a petition.
+    maps: {popolo: person}
+    aliases:
+      de: [Petent, Petentin]
+      fr: [Petitionnaire]

@@ -30,3 +30,13 @@ build/
 track_2a/output/
 track_2a/tmp/
 track_2a/data/private/
+
+# Additional credential formats and local review stores
+*.env
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+*.db

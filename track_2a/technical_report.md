@@ -2,7 +2,8 @@
 
 Repository: <https://github.com/ahmarkhhan/sfedly> (built from the HackApertus project template).
 Build and completion evidence: [BUILD_STATUS](docs/BUILD_STATUS.md).
-Shared affair records and evaluation remain planned. Response caching, batch
+Scoped affair contracts and offline evaluation tooling are implemented;
+human-reviewed cross-body evaluation remains pending. Response caching, batch
 checkpoints, saved-result import and gold-export safeguards are implemented.
 Docker packaging and a synthetic practice replay exist; actual container
 execution is still unverified. [Pipeline evidence](docs/PIPELINE_VERIFICATION.md).
@@ -19,7 +20,7 @@ measured. Measured run evidence: [RESULTS](docs/RESULTS.md).
 | Breadth: demonstration across document types, languages and levels of government | [RESULTS §Measured runs](docs/RESULTS.md#measured-runs); corpus integrity table in [PIPELINE_VERIFICATION](docs/PIPELINE_VERIFICATION.md) | Narrow but real: DE + FR, two bodies (municipal Nidau, cantonal Genève), born-digital plus one scanned/OCR-layer document; a 44-PDF hash-verified corpus awaits review |
 | Traceability and faithfulness: no invented values; span-level provenance; flag rather than guess | [Implemented first slice](#implemented-first-slice); `src/skony/verify.py` (abstains on unlocated, fabricated or ambiguous evidence); strict-validation rejection tests in `tests/test_evidence.py` | Implemented: every non-null field carries document ID, page, original quote and character offsets; unverifiable values abstain |
 | Built with Apertus | `src/prompts/extract.txt`; [RESULTS](docs/RESULTS.md) (recorded `swiss-ai/Apertus-v1.5-70B` runs with token and latency observations) | Yes, at CSCS; development-time only, not redistributed |
-| Reusable outputs: public repository with converter, prompts, validator and README samples | [README](README.md) quick-start; [RESULTS §Reproduce](docs/RESULTS.md#reproduce-public-source-no-credentials-no-docker); hash-checked synthetic fixture in `data/sample/`; 131-test offline suite | Yes, without credentials or network: replay reproduces recorded results byte-identically |
+| Reusable outputs: public repository with converter, prompts, validator and README samples | [README](README.md) quick-start; [RESULTS §Reproduce](docs/RESULTS.md#reproduce-public-source-no-credentials-no-docker); hash-checked synthetic fixture in `data/sample/`; current offline engineering suite | Public synthetic replay runs without credentials; the real DE/FR cache replay requires privately retained inputs |
 | Judge execution: `make run` in Docker | root and track `Makefile`, `Dockerfile`, `compose.yaml`, `scripts/check_docker.py`, CI workflow `.github/workflows/docker-verify.yml` | Packaged, unverified on the development host (no Docker/WSL there); the clean public-source start passes outside a container |
 
 ## Problem and contribution
@@ -37,8 +38,13 @@ across bodies remain the unresolved seam.
 
 PDF → page text and digest → Apertus schema-constrained prompt → strict JSON
 validation → evidence lookup → review-required JSON. The output has eight
-raw fields. Normalisation and controlled vocabularies are planned, rather than
-inferred and silently treated as source text.
+raw fields. A draft controlled-vocabulary layer maps labels to 33 stable term
+IDs (229 DE/FR/EN aliases) while preserving raw values and explicit unmapped
+outcomes. A structural inventory detects annex markers, images and table
+regions with provenance; it does not interpret their values. The research
+explorer searches imported PDF text and exports cited briefs. Scoped v0.2
+review, comparison, migration, gold eligibility and offline evaluation tooling
+are implemented; human gold and measured semantic accuracy remain pending.
 
 Each non-null result includes a document ID, page number, original quote and
 character offsets into the unchanged extracted page text. `source_located`
@@ -47,7 +53,7 @@ faithfulness of question/answer boundaries. All such results require review.
 
 ## Validation so far
 
-131 engineering tests passed on local Python 3.11 ([RESULTS](docs/RESULTS.md)). The client was exercised with
+245 engineering tests and 16 interface-controller tests passed on local Python 3.11 / Node 24 ([RESULTS](docs/RESULTS.md)). The client was exercised with
 mocked HTTP transports and the real CSCS service. Tests cover fabricated
 quotes/values, wrong page attribution, repeated quotes, missing evidence,
 textless/oversize input, malformed schemas, truncated/mismatched endpoint
@@ -99,8 +105,8 @@ visible in the report rather than being filtered out of the denominator.
 Each bullet states a limitation, its consequence and where the evidence is.
 This section, not the feature list, is the insight contribution.
 
-- **Two documents are not coverage.** Model responses exist for exactly two
-  real PDFs, both team-selected. Nothing measures accuracy on unseen
+- **Two documents are not coverage.** The DE/FR batch contains two team-selected
+  real PDFs; the earlier scanned Nidau pilot is recorded separately above. Nothing measures accuracy on unseen
   documents; breadth above is corpus breadth, not measured extraction
   breadth. Evidence: [RESULTS](docs/RESULTS.md).
 - **In-sample tuning.** The prompt (`raw-v0.2`) and verifier (`evidence-v0.2`)
@@ -123,7 +129,7 @@ This section, not the feature list, is the insight contribution.
 - **One previously flaky test.** `test_mutation_requires_token_and_matching_origin`
   in `tests/test_review.py` failed intermittently on the development host; it
   passed five consecutive runs on 16 October and the fresh-clone suite is
-  131/131. Named so a judge re-running it is not surprised. Evidence:
+  passing at the time of that earlier check. Named so a judge re-running it is not surprised. Evidence:
   `python -m unittest tests.test_review.ServerTests.test_mutation_requires_token_and_matching_origin`.
 - **Heuristic roles and languages.** Corpus role and level tags are heuristic
   hints; 13 of 45 manifest rows are unknown-language. Level-of-government
@@ -141,9 +147,11 @@ transcriptions are explicitly labelled and carry no claimed text offsets.
 Exports contain reviewed fields only, plus a list of remaining unreviewed fields.
 Reviewer identity is a self-entered label; multi-user authentication is not implemented.
 
-No OCR, multi-page field assembly, controlled vocabulary mapping,
-cross-body query interface or gold-set evaluation is implemented yet;
-the seam named above is design work, not completed work. The Docker
+OCR and automatic multi-page field assembly remain unimplemented.
+Controlled-vocabulary mapping, structural inventory and a source-text research
+explorer now exist; their synthetic engineering checks do not establish
+cross-body semantic comparability. Gold-set evaluation still requires
+independent human annotation. The Docker
 runner is packaged but has not been built/run in this environment. Whitespace-only
 matching recovers some layout differences but preserves
 wording, punctuation and original offsets. Other OCR/layout differences still
@@ -162,8 +170,7 @@ tested.
 | Application code (this repository) | Apache-2.0 | per event terms |
 | Documentation and this report | CC-BY-4.0 | per event terms |
 | Bundled synthetic fixture (`data/sample/`) | CDLA-Permissive-2.0 | authored; fictional people and parliament |
-| Runtime dependencies: pydantic, httpx, pypdf (pinned in `requirements.txt`) | MIT / BSD-3-Clause | check each package `LICENSE` before redistribution |
+| Runtime: pydantic, httpx, pypdf, PyMuPDF (pinned in `requirements.txt`) | MIT / BSD-3-Clause; PyMuPDF AGPL-3.0 or commercial | PyMuPDF licensing must be satisfied when distributing the application; see upstream licence |
 | Apertus v1.5 via the CSCS endpoint (development time) | Apache-2.0 (model) | not redistributed |
 | OpenParlData source PDFs (private corpus) | source-specific terms | not redistributed; a source manifest must state item-level licences before any redistribution or before a dataset licence is applied to our own annotations |
 | Container base (`python:3.11-slim`, Poppler) | Debian package terms | runner image only |
-

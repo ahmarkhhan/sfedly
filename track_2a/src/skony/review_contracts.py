@@ -43,6 +43,8 @@ class Claim(StrictModel):
 
     @model_validator(mode="after")
     def supported(self):
+        if self.chunk_outcomes and self.chunk_manifest is None:
+            raise ValueError("Chunk outcomes require their coverage manifest")
         if self.predicate not in FIELDS + ("actor", "question", "response", "event", "affair_document",
                                           "question_response", "response_decision", "related_affair"):
             raise ValueError("Unknown predicate")

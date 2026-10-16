@@ -1,56 +1,70 @@
-# Skony — parliamentary affairs from PDFs, with proof
+# Skony — parliamentary data with proof
 
-**Hack Apertus online · Track 2A · OpenParlData.** Submission: 16 October 2026.
+**Current direction:** an Apertus 1.5 converter for comparable parliamentary
+request/answer records, preserving source evidence and measuring where the
+representation works or fails across bodies and languages.
 
-Skony investigates whether parliamentary affairs (motions, postulates,
-interpellations, written questions) from different Swiss parliaments can share
-one structured representation — and builds an **Apertus v1.5** pipeline that
-extracts that representation from real parliamentary PDFs with **page- and
-span-level provenance**: every extracted value keeps its page number, original
-quote and character offsets, so a reviewer can verify it against the source in
-seconds. Unsupported values are withheld, not guessed.
+**Now usable for research:** the [affairs explorer](track_2a/docs/EXPLORER.md)
+at `/explore` searches original PDF text, filters by parliament/language/topic,
+opens source-linked dossiers with requests, answers, dated events and signatories,
+and exports cited JSON/CSV briefs. It works on imported documents before review;
+unreviewed suggestions and practice data are labelled explicitly.
 
-## Run it
+- [Public data, synchronization and secret handling](track_2a/docs/PUBLICATION.md)
+- [Authoritative project direction and requirements](docs/16-project-direction.md)
+- [Source register and verification limits](docs/17-source-register.md)
+- [Delivery backlog and release gates](docs/18-delivery-backlog.md)
 
-```bash
-make run          # Docker; judges' entry point — from this root
-```
+An Apertus 1.5 project for the **Hack Apertus online hackathon**, ending
+16 October 2026 at 12:00 CEST / 15:00 Pakistan time.
 
-Then open http://localhost:8765. The default replay demo uses a bundled
-synthetic practice document (clearly labelled, no API key, no model call).
-Without Make: `docker compose up --build --wait --wait-timeout 90` from
-`track_2a/`. Live Apertus extraction is configured with `LLM_NAME`,
-`LLM_BASE_URL`, `LLM_API_KEY` (see `track_2a/.env.example`).
+- [Earlier project idea and phased build plan](PROJECT_IDEA.md)
+- [Website review and corrected requirements](docs/11-online-research.md)
+- [Current implementation status](track_2a/docs/BUILD_STATUS.md)
+- [First live CSCS pilot](docs/12-cscs-pilot.md)
+- [Run extraction and the review workbench](track_2a/docs/DEVELOPMENT.md)
+- [Run and update the Docker/replay version](track_2a/docs/RUNNING.md)
+- [Batch extraction, replay and review import](track_2a/docs/BATCH_EVALUATION.md)
+- [Verified pipeline results and remaining limits](track_2a/docs/PIPELINE_VERIFICATION.md)
+- [A1–A7 contracts, scoped review and verification](track_2a/docs/AUDIT_IMPLEMENTATION.md)
+- [Active technical report draft](track_2a/technical_report.md)
 
-## Where things are
+The active challenge directory is `track_2a/`. Earlier files about Liebefeld are
+historical planning material. Their broad feature lists and illustrative targets
+are not implemented capabilities or measured results.
 
-| Path | What it is |
-| --- | --- |
-| `track_2a/` | **Project root** (per the Hack Apertus template): converter, prompts, validator, review workbench |
-| `track_2a/README.md` | Full project documentation, status and limitations |
-| `track_2a/technical_report.md` | Technical report (source of the submitted ≤6-page PDF) |
-| `track_2a/src/skony/` | PDF intake → Apertus client → strict validation → evidence verification → review store |
-| `track_2a/src/prompts/extract.txt` | The Apertus extraction prompt |
-| `track_2a/docs/` | Architecture, verification evidence, batch/evaluation workflow, annotation guide |
-| `track_2a/data/sample/` | Public synthetic practice fixture (authored; not model output, not gold data) |
-| `track_2a/tests/` | Engineering test suite (`python -m unittest discover -s tests`) |
+This project is still in development. CSCS access and an initial real-document
+pilot work. The review workbench supports original pages, source checks, persistent
+corrections, audit history and reviewed-only exports. Docker/Compose/Makefile
+packaging and a public synthetic practice demo are now implemented. Clean-source
+startup, PDF preview and review persistence passed; the container image itself
+still needs a Docker-enabled build/run check. Reviewed-corpus evaluation is pending.
 
-## Status in one paragraph
+## Docker requirements
 
-The PDF→schema slice, provenance verification, human-review workbench, batch
-caching with replay, and Docker packaging are implemented and covered by 82
-passing engineering tests; a real DE/FR document pair was extracted with
-Apertus 1.5 70B and replayed with identical results and zero model calls.
-Gold-set annotation, measured evaluation, controlled-vocabulary mapping and a
-cross-parliamentary comparison are this submission's evidence work — see
-`track_2a/technical_report.md` for exactly what is measured, what is partial,
-and what is not yet done. The container build is packaged but was not
-executable in the development environment; `track_2a/scripts/check_docker.py`
-verifies it on any Docker host.
+- Docker Engine or Docker Desktop configured for Linux containers, plus Docker
+  Compose v2 with `up --wait`; GNU Make is needed only for the `make run` shortcut.
+- Internet access for the first image build. The replay demo needs no local Python
+  install, API key, model weights or GPU; Poppler is included in the image.
+- Port `8765` available on the host by default. Set `SKONY_PORT` to use another
+  host port.
+- Compose keeps uploaded PDFs, reviews and audit history in the named
+  `review-state` volume. Standard rebuilds and `make down` preserve it. Live model
+  extraction is optional and needs endpoint settings and an API key in `track_2a/.env`.
 
-## License
+Start from the repository root with `make run`, or follow the [Docker running
+guide](track_2a/docs/RUNNING.md) for the direct Compose command and verification
+status.
 
-Code: Apache-2.0 (`LICENSE`). Documentation and reports: CC-BY-4.0.
-The bundled practice fixture is authored by the project and reusable under
-CC-BY-4.0. No third-party parliamentary documents are redistributed in this
-repository; the pipeline fetches public sources by manifest.
+Batch extraction now checkpoints every source row, preserves failures, and
+caches exact model requests. A real DE/FR pair replayed with two cache hits and
+zero model calls. Both saved results are available in the existing workbench;
+its 12 existing field decisions were preserved.
+
+The current **245 Python engineering tests and 16 interface-controller tests passed on 16 October 2026**. The v0.2
+contracts add dependency-aware scoped review, immutable offline comparison,
+legacy migration, explicit gold eligibility/scoring and capability-based citations
+at `/scoped`. The main extraction screen still uses v0.1. New checks are synthetic;
+corpus-level model accuracy and human gold evaluation remain unmeasured.
+Documentation describing broader features is
+labelled historical or target design; it does not establish implementation.

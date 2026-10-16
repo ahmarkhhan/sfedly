@@ -1,0 +1,94 @@
+# skony.vocab.affair-types v0.1-draft (2026-10-16)
+# Controlled vocabulary for affair types. Status: DRAFT - IDs are stable,
+# labels/aliases grow as the gold set is annotated. Hierarchical via `broader`.
+# Mapping reference targets (see docs/VOCABULARY.md):
+#   oparl   - OParl 1.1 paperType / consultation usage (de-facto standard for
+#             municipal/cantonal bodies, closest match to parliamentary Vorstoesse)
+#   akn     - Akoma Ntoso 3.0 documentTypeURI (naming alignment only)
+#   eCH     - eCH-0039 parliamentary affair service types (Swiss, 4 service
+#             types A-D; aliases mark membership where known)
+vocabulary:
+  id: skony.vocab.affair-types
+  version: v0.1-draft
+  status: draft
+  updated: 2026-10-16
+terms:
+  - id: at.interpellation
+    pref:
+      en: Interpellation
+      de: Interpellation
+      fr: Interpellation
+    def: Written question demanding a substantive government answer; the answer is published and may be debated.
+    broader: at.question
+    maps: {oparl: Interpellation, akn: /akn/.../interpellation}
+    aliases:
+      de: [Interpellation, Schriftliche Anfrage]
+      fr: [Interpellation, Question ecrite]
+  - id: at.simple-question
+    pref:
+      en: Simple question
+      de: Einfache Anfrage
+      fr: Question orale
+    def: Question answered directly without a published written answer.
+    broader: at.question
+    maps: {oparl: Anfrage}
+    aliases:
+      de: [Kleine Anfrage, Einfache Anfrage, Anfrage]
+      fr: [Question au Conseil, Premiere question ecrite]
+  - id: at.question
+    pref: {en: Question (generic), de: Anfrage (generisch), fr: Question (generique)}
+    def: Supertype for all question-like affairs when the subtype is not printed or cannot be assigned reliably.
+    maps: {}
+    aliases:
+      de: [Vorstoss als Frage]
+      fr: []
+  - id: at.postulate
+    pref: {en: Postulate, de: Postulat, fr: Postulat}
+    def: Request that the government examine a matter and report back; the government is asked to act, not to answer.
+    broader: at.motion-family
+    maps: {oparl: Postulat, akn: /akn/.../postulat, eCH: "B"}
+    aliases:
+      de: [Postulat, Dringliches Postulat]
+      fr: [Postulat, Postulat urgent]
+  - id: at.motion
+    pref: {en: Motion, de: Motion, fr: Motion}
+    def: Binding instruction to the government to take a defined action (typically to prepare legislation or an administrative measure).
+    broader: at.motion-family
+    maps: {oparl: Motion, akn: /akn/.../motion, eCH: "A"}
+    aliases:
+      de: [Motion, Dringliche Motion, Standesinitiative]
+      fr: [Motion, Motion urgente]
+  - id: at.motion-family
+    pref: {en: Motion-like affair (generic), de: Motionstyp (generisch), fr: Affaire de type motion (generique)}
+    def: Supertype for binding/examining instructions when the exact subtype (Motion vs Postulat vs parliamentary initiative) is not printed.
+    maps: {}
+    aliases:
+      de: [Vorstoss, Parlamentarischer Vorstoss]
+      fr: [Objet parlementaire]
+  - id: at.parliamentary-initiative
+    pref: {en: Parliamentary initiative, de: Parlamentarische Initiative, fr: Initiative parlementaire}
+    def: Initiative from within parliament proposing a legal text or constitutional change directly.
+    broader: at.motion-family
+    maps: {akn: /akn/.../bill, eCH: "C"}
+    aliases:
+      de: [Parlamentarische Initiative]
+      fr: [Initiative parlementaire]
+  - id: at.petition
+    pref: {en: Petition, de: Petition, fr: Petition}
+    def: Request from outside parliament (citizens, organisations) which parliament may refer to government.
+    maps: {oparl: Petition}
+    aliases:
+      de: [Petition, Eingabe]
+      fr: [Petition, Petition citoyenne]
+  - id: at.government-report
+    pref: {en: Government report / message, de: Bericht des Rates, fr: Rapport du Conseil}
+    def: Report, message or account submitted BY the government to parliament (Rechnung, Jahresbericht, Vernehmlassungsvorlage).
+    maps: {oparl: Beschlussvorlage, akn: /akn/.../report}
+    aliases:
+      de: [Jahresbericht, Rechnung, Botschaft, Vernehmlassungsvorlage, Bericht und Antrag]
+      fr: [Rapport annuel, Compte de gestion, Message, Mise en consultation]
+  - id: at.other
+    pref: {en: Other affair, de: Anderes Geschaeft, fr: Autre affaire}
+    def: Affair printed with a type that no term in this vocabulary covers. Always accompanied by the preserved raw label.
+    maps: {}
+    aliases: {de: [], fr: []}

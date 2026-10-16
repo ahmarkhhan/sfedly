@@ -22,6 +22,10 @@ python -m skony schema --output docs/candidate.schema.json
 
 ## Open the review workbench
 
+The same server also serves the [affairs explorer](EXPLORER.md) at `/explore`.
+It searches imported source text before extraction or review, and offers cited
+dossiers and JSON/CSV research exports without model calls.
+
 ```powershell
 $env:PYTHONPATH = 'src'
 python -m skony serve --mode live --port 8765
@@ -46,6 +50,31 @@ Reviewer names are self-entered audit labels, not authenticated identities.
 Original page previews require Poppler's `pdftoppm` on PATH. It is available in
 the tested desktop runtime. Without it, use **Open PDF** or extracted text.
 The interface uses local assets and requires no frontend build or CDN.
+
+### Highlight a value on the PDF
+
+Hover over or focus an extracted value to preview its supporting lines on the
+original page. Click the value or **View evidence** to keep it selected; use
+**Clear** or Escape to remove the selection. The source panel shows the field,
+page, supporting passage and whether the value has been reviewed. The highlights
+resize with the page and zoom. **Extracted text** retains the passage highlight
+using the saved Unicode character offsets.
+
+Install the updated `requirements.txt` and restart the server after updating.
+PDF geometry uses PyMuPDF; page previews still use Poppler. Cropped/rotated
+previews and coordinates use the same crop box. Geometry is served by
+`GET /api/documents/{id}/fields/{field}/evidence`, with the current revision,
+page and normalized line rectangles. It follows the effective review or
+suggestion and does not change reviews or exports.
+
+Only an unambiguous text match is positioned. Repeated passages, missing text
+layers, extraction differences and human image transcriptions can have no region;
+the panel explains this and preserves the supporting passage for text or visual
+inspection. A highlight identifies evidence, not semantic correctness.
+
+Synthetic geometry and interaction checks live in `tests/test_pdf_evidence.py`
+and `tests/evidence-ui.test.cjs`. They cover wrapped text, accents, ambiguous
+matches, rotated crop boxes, review provenance and stale asynchronous responses.
 
 For isolated interface testing, use a different data directory and port:
 
@@ -101,4 +130,3 @@ can be mapped back to original spans; words and punctuation are not fuzzy-matche
 
 The `make run` Docker entry point is now present. These local CLI checks do not
 replace the pending container build/run/rebuild verification; see [RUNNING](RUNNING.md).
-

@@ -13,7 +13,8 @@ from src.skony.api_v2 import V2API
 from src.skony.comparison import query_snapshot
 from src.skony.contracts import RunEnvelope, ScopeBinding, TextSnapshot, canonical, identity
 from src.skony.pipeline_v2 import PROMPT_ID, candidate_schema, chunk_manifest
-from src.skony.review_contracts import ComparisonSpec
+from src.skony.review import ReviewError
+from src.skony.review_contracts import Claim, ComparisonSpec
 from src.skony.server import Workbench, make_handler
 from v2_helpers import accept, claim_for, review_fixture, wire, propose
 
@@ -63,6 +64,23 @@ class V2IntegrationTests(unittest.TestCase):
         self.assertEqual(result["claim_ids"], [])
         self.assertEqual(self.domain.get(result["extraction_id"], "extraction")["content"], raw)
         self.assertEqual(self.domain.current_reviews(), [])
+
+    def test_extraction_claim_cannot_replace_or_drop_recorded_coverage(self):
+        recording = self.recording()
+        recording["finish_reason"] = None
+        imported = self.api.post(["extractions"], recording)
+        original = Claim.model_validate(self.domain.get(imported["claim_ids"][0], "claim"))
+        changed_outcome = original.model_copy(deep=True)
+        changed_outcome.chunk_outcomes[0].finish_reason = "stop"
+        changed_manifest = original.model_copy(deep=True)
+        changed_manifest.chunk_manifest.selection_policy = "unrecorded replacement"
+        dropped_coverage = original.model_copy(update={"chunk_manifest": None, "chunk_outcomes": []})
+        for changed in (changed_outcome, changed_manifest, dropped_coverage):
+            with self.subTest(claim=changed), self.assertRaisesRegex(ReviewError, "recorded.*coverage"):
+                self.domain.put_claim(changed)
+        self.assertEqual(len(self.domain.claims(self.scope["id"])), 1)
+        decision = accept(self.domain, imported["claim_ids"][0], self.scope)
+        self.assertEqual(decision["completeness"]["generation_completion"], "unknown")
 
     def test_identical_value_rerun_does_not_reopen_a_resolved_conflict(self):
         first = self.api.post(["extractions"], self.recording())

@@ -18,6 +18,7 @@ from .review import ReviewError
 from .migration import get_object, head
 from .review_contracts import (AffairRecord, Claim, ComparisonSpec, MappingRule,
                                ReviewInput, ScopeRecord, SourceAssessment)
+from .evaluation_api import evaluate, schemas as evaluation_schemas
 
 
 class ScopeUpdate(StrictModel):
@@ -115,6 +116,8 @@ class V2API:
         return path
 
     def get(self, parts):
+        if parts == ["evaluation", "schemas"]:
+            return evaluation_schemas()
         if parts == ["schemas"]:
             return {"candidate": candidate_schema(), "run": RunEnvelope.model_json_schema(),
                     "review": ReviewInput.model_json_schema(), "gold": GoldUnit.model_json_schema(),
@@ -148,6 +151,8 @@ class V2API:
         raise ReviewError("Versioned resource not found", 404)
 
     def post(self, parts, data):
+        if len(parts) == 2 and parts[0] == "evaluation":
+            return evaluate(parts[1], data)
         if parts == ["sources"]:
             request = SourceInput.model_validate(data)
             return self.domain.register_document(request.document_id, request.metadata)
